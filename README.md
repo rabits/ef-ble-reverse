@@ -13,14 +13,16 @@ some other way.
 
 ## Goal
 
-To develop a local solution to control ecoflow devices via homeassistant automation. The plugin
-will be stored in another repo - here is just tools & experiments to share with community.
+To develop a local solution to control ecoflow devices via homeassistant automation. Here is just
+tools & experiments to share with community.
+
+* Home Assistant integration: https://github.com/rabits/ha-ef-ble
 
 ## WARNING: Support & Warranty
 
 Sorry, no support no warranty - you on your own and I take no responsibility for any of your
 actions. We all grown-ups here and know that we deal with quite dangerous voltages and storage
-devices that could kill or cause death. So make sure you know what you doing for each and every
+devices that could injure or cause death. So make sure you know what you doing for each and every
 step - otherwise you can't use the provided information in this repository.
 
 In case you see some issues with your device after using this repo - ecoflow support could be

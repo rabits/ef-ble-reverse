@@ -4,10 +4,15 @@ import time
 import struct
 import asyncio
 
-from bleak import BleakClient, BleakScanner
-from bleak.backends.device import BLEDevice
+from bleak import BleakError, BleakScanner
 from bleak.backends.scanner import AdvertisementData
 from bleak.backends.characteristic import BleakGATTCharacteristic
+from bleak_retry_connector import (
+    MAX_CONNECT_ATTEMPTS,
+    BleakClientWithServiceCache,
+    BLEDevice,
+    establish_connection,
+)
 
 import hashlib
 import ecdsa
@@ -74,6 +79,7 @@ class Device:
         return Device(ble_dev, adv_data)
 
     def __init__(self, ble_dev, adv_data):
+        self._ble_dev = ble_dev
         self._address = ble_dev.address
         self._name = adv_data.local_name
         self._sn = None
@@ -93,7 +99,7 @@ class Device:
 
     async def connect(self):
         if self._conn == None:
-            self._conn = Connection(self._address, self._sn)
+            self._conn = Connection(self._ble_dev, self._sn)
             await self._conn.connect()
 
     async def waitDisconnect(self):
@@ -245,15 +251,18 @@ class Connection:
     NOTIFY_CHARACTERISTIC = "00000003-0000-1000-8000-00805f9b34fb"
     WRITE_CHARACTERISTIC = "00000002-0000-1000-8000-00805f9b34fb"
 
-    def __init__(self, address, dev_sn):
-        self._address = address
+    def __init__(self, ble_dev, dev_sn):
+        self._ble_dev = ble_dev
+        self._address = ble_dev.address
         self._dev_sn = dev_sn
-        self._client = None
-        self._disconnected = asyncio.Event()
 
+        self._retry_on_disconnect = True
+        self._disconnected = asyncio.Event()
+        self._client = None
         self._enc_packet_buffer = b''
 
     async def shutdown(self):
+        self._retry_on_disconnect = False
         if self._client != None:
             await self._client.disconnect()
         self._done.set()
@@ -398,9 +407,30 @@ class Connection:
                     except Exception as e:
                         print("    [Descriptor] %s, Error: %s" % (descriptor, e))
 
-    async def connect(self):
-        self._client = BleakClient(self._address)
-        await self._client.connect()
+    def ble_device_callback(self) -> BLEDevice:
+        return self._ble_dev
+
+    async def connect(self, max_attempts: int = MAX_CONNECT_ATTEMPTS):
+        self._retry_on_disconnect = True
+        try:
+            if self._client != None:
+                if self._client.is_connected:
+                    print("%s: INFO: is already connected" % (self._address,))
+                    return
+                await self._client.connect()
+            else:
+                self._client = await establish_connection(
+                    BleakClientWithServiceCache,
+                    self.ble_device_callback(),
+                    self._ble_dev.name,
+                    disconnected_callback=self.disconnected,
+                    ble_device_callback=self.ble_device_callback,
+                    max_attempts=max_attempts,
+                )
+        except (asyncio.TimeoutError, BleakError) as err:
+            print("%s: Failed to connect to the device: %s" % (self._address, err))
+            raise err
+
         print("%s: INFO: Connected" % (self._address,))
 
         await self.printServices()
@@ -412,6 +442,14 @@ class Connection:
         print("%s: INFO: Init completed, running init routine" % (self._address,))
 
         await self.initBleSessionKey()
+
+    def disconnected(self, *args, **kwargs) -> None:
+        print("%s: Disconnected from device callback" % (self._address,))
+        if self._retry_on_disconnect:
+            loop = asyncio.get_event_loop()
+            loop.create_task(self.connect())
+        else:
+            self._disconnected.set()
 
     async def sendRequest(self, send_data: bytes, response_handler):
         print("%s: Sending: %r" % (self._address, " ".join("{:02x}".format(c) for c in send_data)))
@@ -548,13 +586,19 @@ class Connection:
                 if packet.cmdId() == 0x01:
                     p = pd303_pb2.ProtoTime()
                     p.ParseFromString(packet.payload())
-                    print(str(p))
                     processed = True
+                    print("Test1:", str(p))
                 elif packet.cmdId() == 0x20:
                     p = pd303_pb2.ProtoPushAndSet()
                     p.ParseFromString(packet.payload())
-                    print(str(p))
                     processed = True
+                    print("Test2:", str(p))
+                    if not p.HasField('backup_incre_info'):
+                        continue
+                    p = p.backup_incre_info
+                    if p.HasField('errcode'):
+                        for e in p.errcode.err_code:
+                            print(e)
             if not processed:
                 print("%s: DEBUG: listenForDataHandler packet data: %r" % (self._address, " ".join("{:02x}".format(c) for c in packet.payload())))
                 print("%s: DEBUG: listenForDataHandler packet src: %02X, cmdSet: %02X, cmdId: %02X" % (self._address, packet.src(), packet.cmdSet(), packet.cmdId()) )
