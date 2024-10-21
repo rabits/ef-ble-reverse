@@ -1,0 +1,133 @@
+syntax = "proto2";
+
+package fd100;
+
+message EfFd100ReportPack {
+  optional uint32 scenes = 1;
+  optional uint32 word = 2;
+  optional uint32 mode = 3;
+  optional uint32 lux = 4;
+  optional uint32 lux_grade = 5;
+  optional uint32 water = 6;
+  optional uint32 wind = 7;
+  optional uint32 shake = 8;
+  optional uint32 angle = 9;
+  optional uint32 angle_manual = 10;
+  optional uint32 angle_target = 11;
+  optional uint32 charge_state = 12;
+  optional uint32 charge_timer = 13;
+  optional uint32 battery_percent = 14;
+  optional uint32 battery_temperature = 15;
+  optional uint32 switch_state = 16;
+  optional uint32 err_code = 17;
+  optional uint32 track_tim = 18;
+  optional uint32 str_lux = 19;
+  optional uint32 light_sen = 20;
+  optional uint32 shark_sen = 21;
+}
+
+message EfFd100SetScenesStatePack {
+  optional uint32 scenes_state_set = 1;
+}
+
+message EfFd100SetScenesStatePackAck {
+  optional sint32 result = 1;
+}
+
+message EfFd100SetPowerStatePack {
+  optional uint32 power_state_set = 1;
+}
+
+message EfFd100SetPowerStatePackAck {
+  optional sint32 result = 1;
+}
+
+message EfFd100SetWorkModePack {
+  optional uint32 work_mode_set = 1;
+}
+
+message EfFd100SetWorkModePackAck {
+  optional sint32 result = 1;
+}
+
+message EfFd100SetBeepEnPack {
+  optional uint32 beep_en_set = 1;
+}
+
+message EfFd100SetBeepEnPackAck {
+  optional sint32 result = 1;
+}
+
+message EfFd100SetRainProtectPack {
+  optional uint32 rain_protect = 1;
+}
+
+message EfFd100SetRainProtectPackAck {
+  optional sint32 result = 1;
+}
+
+message EfFd100SetWindProtectPack {
+  optional uint32 wind_protect = 1;
+  optional uint32 shark_sen = 2;
+}
+
+message EfFd100SetWindProtectPackAck {
+  optional sint32 result = 1;
+}
+
+message EfFd100SetWeatherProtectPack {
+  optional uint32 weather_protect = 1;
+}
+
+message EfFd100SetWeatherProtectPackAck {
+  optional sint32 result = 1;
+}
+
+message EfFd100SetManualAnglePack {
+  optional uint32 angle_set = 1;
+}
+
+message EfFd100SetManualAnglePackAck {
+  optional sint32 result = 1;
+}
+
+message EfFd100SetIotUnbindPack {
+  optional uint32 iot_unbind = 1;
+}
+
+message EfFd100SetIotUnbindPackAck {
+  optional sint32 result = 1;
+}
+
+message EfFd100SetIotLightTrackGapPack {
+  optional uint32 track_tim = 1;
+}
+
+message EfFd100SetIotLightTrackGapPackAck {
+  optional sint32 result = 1;
+}
+
+message EfFd100SetIotLightStartValPack {
+  optional uint32 str_lux = 1;
+  optional uint32 light_sen = 2;
+}
+
+message EfFd100SetIotLightStartValPackAck {
+  optional sint32 result = 1;
+}
+
+message EfFd100SetIotLightSenPack {
+  optional uint32 light_sen = 1;
+}
+
+message EfFd100SetIotLightSenPackAck {
+  optional sint32 result = 1;
+}
+
+message EfFd100SetIotSharkSenPack {
+  optional uint32 shark_sen = 1;
+}
+
+message EfFd100SetIotSharkSenPackAck {
+  optional sint32 result = 1;
+}

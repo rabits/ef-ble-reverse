@@ -1,0 +1,513 @@
+syntax = "proto2";
+
+package yj751;
+
+enum SaveWorkMode {
+  SAVEMODE_NONE = 0;
+  SAVEMODE_SELFUSE = 1;
+  SAVEMODE_TIME = 2;
+  SAVEMODE_TOU = 3;
+}
+
+enum Access5p8InputType {
+  IN_IDLE = 0;
+  IN_AC_EV = 1;
+  IN_PD303 = 2;
+  IN_L14_TRANS = 3;
+}
+
+enum Access5p8OutputType {
+  OUT_IDLE = 0;
+  OUT_PARALLEL_BOX = 1;
+  OUT_PD303 = 2;
+}
+
+enum EnNetifType {
+  NETIF_WIFI_STA = 0;
+  NETIF_4G_MODEM = 1;
+  NETIF_LAN = 2;
+}
+
+enum Iot4GErrCode {
+  MODEM_ERR_NONE = 0;
+  MODEM_ERR_SIM_NOT_INSERTED = 1;
+  MODEM_ERR_PIN_REQUIRED = 2;
+  MODEM_ERR_PUK_REQUIRED = 3;
+  MODEM_ERR_SIM_ERROR = 4;
+  MODEM_ERR_DISABLE = 5;
+  MODEM_ERR_NOT_OPERATOR = 6;
+  MODEM_ERR_USB_DISCONNECT = 7;
+  MODEM_ERR_UNKNOWN_DEVICE = 8;
+  MODEM_ERR_CTL_ERROR = 9;
+}
+
+enum REG_STATE {
+  REG_OPERATOR_NOT_SEARCH = 0;
+  REG_REGISTERED = 1;
+  REG_SEARCHING = 2;
+  REG_REFUSES = 3;
+  REG_UNKNOW = 4;
+  REG_ROAMING_REGISTERED = 5;
+}
+
+enum MODEM_RAT {
+  RAT_NONE = 0;
+  RAT_2G = 2;
+  RAT_3G = 3;
+  RAT_4G = 4;
+}
+
+enum TIME_TASK_TYPE {
+  AC_CHG = 0;
+  AC_DSG = 1;
+  DC_DSG = 2;
+}
+
+message TimeInfo {
+  optional uint32 hour = 1;
+  optional uint32 min = 2;
+  optional uint32 sec = 3;
+}
+
+message SelfUsedParam {
+}
+
+message TouParam {
+  optional .yj751.TimeInfo start_time = 1;
+  optional .yj751.TimeInfo end_time = 2;
+  optional uint32 chg_dsg_mode = 3;
+}
+
+message BackupParam {
+  optional uint32 backup_soc = 1;
+}
+
+message AppShowHeartbeatReport {
+  optional uint32 proto_ver = 1;
+  optional uint32 show_flag = 2;
+  optional uint32 access_type = 3;
+  optional sint32 wireless_4g_on = 10;
+  optional sint32 wireless_4G_sta = 11;
+  optional uint32 access_5p8_in_type = 12;
+  optional uint32 access_5p8_out_type = 13;
+  optional sint32 wireless_4g_con = 14;
+  optional sint32 wirlesss_4g_err_code = 15;
+  optional string sim_iccid = 16;
+  optional uint32 soc = 21;
+  optional uint32 bp_num = 22;
+  optional uint32 pcs_type = 23;
+  optional uint32 c20_chg_max_watts = 24;
+  optional uint32 para_chg_max_watts = 25;
+  optional uint32 remain_time = 26;
+  optional uint32 sys_err_code = 27;
+  optional uint32 full_combo = 28;
+  optional uint32 remain_combo = 29;
+  optional float watts_in_sum = 41;
+  optional float watts_out_sum = 42;
+  optional float out_usb1_pwr = 43;
+  optional float out_usb2_pwr = 44;
+  optional float out_typec1_pwr = 45;
+  optional float out_typec2_pwr = 46;
+  optional float out_ads_pwr = 47;
+  optional float out_ac_l1_1_pwr = 48;
+  optional float out_ac_l1_2_pwr = 49;
+  optional float out_ac_l2_1_pwr = 50;
+  optional float out_ac_l2_2_pwr = 51;
+  optional float out_ac_tt_pwr = 52;
+  optional float out_ac_l14_pwr = 53;
+  optional float out_ac_5p8_pwr = 54;
+  optional float in_ac_5p8_pwr = 55;
+  optional float in_ac_c20_pwr = 56;
+  optional float in_lv_mppt_pwr = 57;
+  optional float in_hv_mppt_pwr = 58;
+  optional float out_pr_pwr = 59;
+  optional uint32 time_task_change_cnt = 100;
+  optional uint32 time_task_conflict_flag = 101;
+  optional uint32 chg_time_task_notice = 102;
+  optional uint32 chg_time_task_type = 103;
+  optional uint32 chg_time_task_index = 104;
+  optional uint32 chg_time_task_mode = 105;
+  optional uint32 chg_time_task_param = 106;
+  optional uint32 chg_time_task_table_0 = 107;
+  optional uint32 chg_time_task_table_1 = 108;
+  optional uint32 chg_time_task_table_2 = 109;
+  optional uint32 dsg_time_task_notice = 121;
+  optional uint32 dsg_time_task_type = 122;
+  optional uint32 dsg_time_task_index = 123;
+  optional uint32 dsg_time_task_mode = 124;
+  optional uint32 dsg_time_task_param = 125;
+  optional uint32 dsg_time_task_table_0 = 126;
+  optional uint32 dsg_time_task_table_1 = 127;
+  optional uint32 dsg_time_task_table_2 = 128;
+}
+
+message BackendRecordHeartbeatReport {
+  optional uint32 record_flag = 1;
+  optional uint32 sys_work_sta = 21;
+  optional uint32 chg_reign_sta = 22;
+  optional uint32 pcs_work_sta = 23;
+  optional uint32 fan_state = 24;
+  optional uint32 ems_work_sta = 25;
+  optional uint32 c20_in_type = 41;
+  optional uint32 work_5p8_mode = 42;
+  optional uint32 ac_in_freq = 43;
+  optional uint32 ems_max_avail_num = 44;
+  optional uint32 ems_open_bms_idx = 45;
+  optional uint32 ems_para_vol_min = 46;
+  optional uint32 ems_para_vol_max = 47;
+  optional uint32 ac_out_freq = 48;
+  optional uint32 pcs_dc_err_code = 49;
+  optional uint32 pcs_ac_err_code = 50;
+  optional uint32 lv_pv_err_code = 51;
+  optional uint32 hv_pv_err_code = 52;
+  optional uint32 ads_err_code = 53;
+  optional float bat_vol = 61;
+  optional float bat_amp = 62;
+  optional float bms_input_watts = 63;
+  optional float bms_output_watts = 64;
+  optional float out_usb1_vol = 65;
+  optional float out_usb1_amp = 66;
+  optional float out_usb2_vol = 67;
+  optional float out_usb2_amp = 68;
+  optional float out_typec1_vol = 69;
+  optional float out_typec1_amp = 70;
+  optional float out_typec2_vol = 71;
+  optional float out_typec2_amp = 72;
+  optional float out_ads_vol = 73;
+  optional float out_ads_amp = 74;
+  optional float out_ac_l1_1_vol = 75;
+  optional float out_ac_l1_1_amp = 76;
+  optional float out_ac_l1_2_vol = 77;
+  optional float out_ac_l1_2_amp = 78;
+  optional float out_ac_l2_1_vol = 79;
+  optional float out_ac_l2_1_amp = 80;
+  optional float out_ac_l2_2_vol = 81;
+  optional float out_ac_l2_2_amp = 82;
+  optional float out_ac_tt_vol = 83;
+  optional float out_ac_tt_amp = 84;
+  optional float out_ac_l14_vol = 85;
+  optional float out_ac_l14_amp = 86;
+  optional float out_ac_5p8_vol = 87;
+  optional float out_ac_5p8_amp = 88;
+  optional float in_ac_5p8_vol = 89;
+  optional float in_ac_5p8_amp = 90;
+  optional float in_ac_c20_vol = 91;
+  optional float in_ac_c20_amp = 92;
+  optional float in_lv_mppt_vol = 93;
+  optional float in_lv_mppt_amp = 94;
+  optional float in_hv_mppt_vol = 95;
+  optional float in_hv_mppt_amp = 96;
+  optional float pcs_dc_temp = 97;
+  optional float pcs_ac_temp = 98;
+  optional float mppt_lv_temp = 99;
+  optional float mppt_hv_temp = 100;
+  optional int32 pd_temp = 101;
+  optional float ev_max_charger_cur = 102;
+}
+
+message APPParaHeartbeatReport {
+  optional uint32 sys_word_mode = 1;
+  optional uint32 sys_backup_event = 2;
+  optional uint32 sys_backup_soc = 3;
+  optional uint32 energy_mamage_enable = 4;
+  optional uint32 backup_ratio = 5;
+  optional uint32 ac_xboost = 6;
+  optional uint32 ac_out_freq = 7;
+  optional uint32 bms_mode_set = 8;
+  optional uint32 chg_max_soc = 9;
+  optional uint32 dsg_min_soc = 10;
+  optional uint32 ac_often_open_flg = 11;
+  optional uint32 ac_often_open_min_soc = 12;
+  optional uint32 chg_5p8_set_watts = 13;
+  optional uint32 chg_c20_set_watts = 14;
+  optional uint32 power_standby_mins = 15;
+  optional uint32 screen_standby_sec = 16;
+  optional uint32 dc_standby_mins = 17;
+  optional uint32 ac_standby_mins = 18;
+  optional uint32 solar_only_flg = 19;
+  optional uint32 timezone_settype = 20;
+  optional sint32 sys_timezone = 21;
+  optional string sys_timezone_id = 22;
+  optional uint32 bypass_dsg_en_flag = 23;
+  optional uint32 ac_in_ban_flag = 24;
+  optional uint32 chg_pfc_set_watts = 25;
+}
+
+message BPInfo {
+  optional uint32 bp_no = 1;
+  optional uint32 bp_chg_sta = 2;
+  optional uint32 bp_soc = 3;
+  optional float bp_pwr = 4;
+  optional float bp_energy = 5;
+  optional uint32 heat_time = 6;
+  optional uint32 remain_time = 7;
+  optional uint32 bp_soc_max = 8;
+  optional uint32 bp_soc_min = 9;
+  optional uint32 bp_err_code = 10;
+  optional int32 bp_temp = 11;
+  optional uint32 bp_sunnova_ban = 12;
+}
+
+message BpInfoReport {
+  repeated .yj751.BPInfo bp_info = 1;
+}
+
+message SysRTCSyncGet {
+}
+
+message SysRTCSync {
+  optional uint32 sys_utc_time = 1;
+  optional sint32 sys_timezone = 2;
+}
+
+message Combo4GInfoGet {
+  optional string sim_iccid = 1;
+}
+
+message Combo4GInfoGetAck {
+  optional uint32 is_bind = 1;
+  optional uint32 combo_type = 2;
+  optional uint32 month_full_combo = 3;
+  optional uint32 day_remain_combo = 4;
+  optional uint32 month_remain_combo = 5;
+  optional uint32 year_remain_combo = 6;
+}
+
+message ProductNameSet {
+  optional string product_name = 1;
+}
+
+message SetCmdResultAck {
+  optional sint32 result = 1;
+}
+
+message ProductInfoGet {
+}
+
+message ProductInfoGetAck {
+  optional sint32 result = 1;
+  optional uint32 model = 2;
+  optional uint32 soc = 3;
+  optional string product_name = 4;
+}
+
+message FactoryReset {
+  optional uint32 level = 1;
+}
+
+message DCSwitchSet {
+  optional uint32 enable = 1;
+}
+
+message ACDsgSet {
+  optional uint32 enable = 1;
+  optional uint32 xboost = 2;
+  optional uint32 out_freq = 3;
+  optional uint32 out_voltage = 4;
+}
+
+message ACChgSet {
+  optional uint32 chg_5p8_watts = 1;
+  optional uint32 chg_c20_watts = 2;
+  optional uint32 chg_pause_flag = 3;
+}
+
+message PowerStandbySet {
+  optional uint32 power_standby_min = 1;
+}
+
+message ScreenStandbySet {
+  optional uint32 screen_standby_sec = 1;
+}
+
+message ACStandbySet {
+  optional uint32 ac_standby_min = 1;
+}
+
+message DCStandbySet {
+  optional uint32 dc_standby_min = 1;
+}
+
+message ChgSocMaxSet {
+  optional uint32 max_chg_soc = 1;
+}
+
+message DsgSocMinSet {
+  optional uint32 min_dsg_soc = 1;
+}
+
+message BpHeatSet {
+  optional uint32 en_bp_heat = 1;
+}
+
+message Switch4GEnable {
+  optional uint32 en_4G_open = 1;
+}
+
+message Iot4GInfoGet {
+}
+
+message Iot4GInfoGetAck {
+  optional sint32 enable = 1;
+  optional sint32 usb_con = 2;
+  optional sint32 pdp_active = 3;
+  optional string sim_iccid = 4;
+  optional string sim_imsi = 5;
+  optional string modem_imei = 6;
+  optional string modem_ver = 7;
+  optional string network_act = 8;
+  optional string network_sopr = 9;
+  optional string network_nopr = 10;
+  optional string network_band = 11;
+  optional uint32 network_rat = 12;
+  optional uint32 network_reg = 13;
+  optional sint32 signal_rssi = 14;
+  optional sint32 err_code = 15;
+  optional sint32 signal_ico = 16;
+  optional uint32 ip = 17;
+}
+
+message AcOftenOpenCfg {
+  optional uint32 ac_often_open = 1;
+  optional uint32 ac_often_open_min_soc = 2;
+}
+
+message EnergyManageSet {
+  optional uint32 energy_manage_enable = 1;
+  optional uint32 backup_ratio = 2;
+}
+
+message SolarOnlySet {
+  optional uint32 solar_only_enable = 1;
+}
+
+message AppConnectSync {
+  optional uint32 connect_sta = 1;
+}
+
+message SetReportInfo {
+  optional uint32 data_type = 1;
+  optional sint32 cycle_ms = 2;
+}
+
+message ServerSetReportInfo {
+  repeated .yj751.SetReportInfo set_info = 1;
+}
+
+message SystemParamGet {
+  optional uint32 get_param_type = 1;
+}
+
+message SysRTCGet {
+}
+
+message GeneralTimetaskGet {
+}
+
+message GeneralTimeTaskCfg {
+  optional uint32 product_type = 1;
+  optional uint32 task_seted_number = 2;
+  optional uint32 task_max_number = 3;
+  optional uint32 conf_number = 4;
+  repeated uint32 conf_term = 5;
+}
+
+message GeneralTimeTaskSet {
+  optional uint32 tasks_ctrl = 1;
+}
+
+message DefineTimeTaskCfg {
+  optional uint32 task_index = 1;
+  optional bool is_valid = 2;
+  optional bool is_cfg = 3;
+  optional bool is_enable = 4;
+  optional uint32 conflict_flag = 5;
+  optional uint32 type = 6;
+  optional uint32 time_mode = 7;
+  optional uint32 time_param = 8;
+  repeated uint32 time_table = 9;
+}
+
+message DefineTimeTaskSetAck {
+  optional uint32 type = 1;
+  optional uint32 task_index = 2;
+  optional uint32 sta = 3;
+}
+
+message DefineTimeTaskGet {
+  optional uint32 type = 1;
+  optional uint32 task_index = 2;
+}
+
+message ALLDefineTimeTaskGet {
+}
+
+message ALLDefineTimeTaskGetAck {
+  repeated .yj751.DefineTimeTaskCfg time_task_cfg = 1;
+}
+
+message FastSlowChgSet {
+  optional uint32 fast_slow_set = 1;
+}
+
+message PowerOffSet {
+  optional uint32 power_off_set = 1;
+}
+
+message FanLevelSet {
+  optional uint32 ext_fan_level = 1;
+  optional uint32 int_fan_level = 2;
+}
+
+message StatisticsItem {
+  optional uint32 timestamp = 1;
+  optional uint32 time_type = 2;
+  optional uint32 data_type = 3;
+  repeated sint32 data = 4;
+}
+
+message StatisticsTotalReport {
+  optional uint32 item_seq = 1;
+  repeated .yj751.StatisticsItem item_data = 2;
+}
+
+message StatisticsTotalReportAck {
+  optional uint32 result = 1;
+  optional uint32 item_seq = 2;
+  optional uint32 time_type = 3;
+  optional uint32 data_type = 4;
+}
+
+message StatisticsRptCtrlSet {
+  optional uint32 time_type = 1;
+  optional uint32 data_type = 2;
+  optional uint32 sys_rate_ctrl_time = 3;
+}
+
+message StatisticsRptCtrlSetAck {
+  optional uint32 result = 1;
+  optional uint32 time_type = 2;
+  optional uint32 data_type = 3;
+}
+
+message CurrentNode {
+  optional string parentSn = 1;
+  optional string currentSn = 2;
+  optional uint32 currentSnIdx = 3;
+  optional uint32 extIdx = 4;
+}
+
+message PrStateSet {
+  optional uint32 set_self = 1;
+  optional uint32 set_para = 2;
+}
+
+message AppSetTimezoneType {
+  optional uint32 set_type = 1;
+}
+
+message TimeTaskSpecialSet {
+  optional uint32 bypass_dsg_en = 1;
+  optional uint32 ac_in_ban = 2;
+  optional uint32 chg_pfc_set_watts = 3;
+}

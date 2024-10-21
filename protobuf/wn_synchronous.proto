@@ -1,0 +1,52 @@
+syntax = "proto2";
+
+package wn;
+
+message ap_message {
+  optional string router_ssid = 1;
+  optional bytes router_bssid = 2;
+  optional int32 router_rssi = 3;
+  optional uint32 router_channel = 4;
+}
+
+message ap_list_message {
+  repeated .ap_message ap_list = 1;
+}
+
+message network_message {
+  optional uint32 mesh_type = 1;
+  optional string router_ssid = 2;
+  optional string router_pwd = 3;
+  optional bytes router_bssid = 4;
+  optional bytes mesh_id = 5;
+  optional string https_url = 6;
+  optional uint32 router_channel = 7;
+  optional uint32 mesh_enable = 8;
+  optional string softap_pwd = 9;
+}
+
+message network_sta_message {
+  optional int32 mesh_state = 1;
+  optional int32 mesh_layer = 2;
+  optional int32 parent_rssi = 3;
+  optional int32 https_state = 4;
+  optional int32 mqtt_state = 5;
+  optional bytes ping_info = 6;
+}
+
+message sn_pack {
+  optional string sn = 1;
+}
+
+message ota_cmd_message {
+  optional uint32 size = 1;
+  optional string md5 = 2;
+  optional uint32 version = 3;
+  optional string url = 4;
+  repeated .sn_pack sn_list = 6;
+  optional bool force = 7;
+}
+
+message ack_message {
+  optional bool ret_sta = 1;
+}

@@ -1,0 +1,41 @@
+syntax = "proto2";
+
+package utc;
+
+message APPParaHeartbeatReport {
+  optional sint32 sys_timezone = 20;
+  optional string sys_timezone_id = 21;
+}
+
+message SysUTCRequest {
+}
+
+message SysUTCRequestACK {
+  optional uint32 sys_utc_time = 1;
+}
+
+message SysRTCInfoGet {
+}
+
+message SysRTCInfoGetACK {
+  optional uint32 sys_utc_time = 1;
+  optional sint32 sys_timezone = 2;
+  optional uint32 time_type = 3;
+  optional string timezone_id = 4;
+}
+
+message SysUTCSync {
+  optional uint32 sys_utc_time = 1;
+}
+
+message SetCmdResultAck {
+  optional sint32 result = 1;
+}
+
+message SysTimezoneSync {
+  optional sint32 sys_timezone = 1;
+}
+
+message SysTimezoneIDSync {
+  optional string timezone_id = 1;
+}

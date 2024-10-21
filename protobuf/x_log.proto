@@ -1,0 +1,22 @@
+syntax = "proto2";
+
+package xlog;
+
+message pb_log_item_t {
+  optional uint32 unix_time = 1;
+  optional uint32 ms = 2;
+  optional uint32 event_no = 3;
+  repeated float event_detail = 4;
+}
+
+message pb_log_push_cmd_t {
+  optional uint32 event_ver = 1;
+  optional uint32 event_seq = 2;
+  repeated .pb_log_item_t event_item = 3;
+}
+
+message pb_log_push_ack_t {
+  optional uint32 result = 1;
+  optional uint32 event_seq = 2;
+  optional uint32 event_item_num = 3;
+}

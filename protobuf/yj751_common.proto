@@ -1,0 +1,168 @@
+syntax = "proto2";
+
+package yj751;
+
+enum SERVE_MIDDLEMEN {
+  SERVE_MIDDLEMEN_NONE = 0;
+  SERVE_MIDDLEMEN_SUNNOVA = 1;
+}
+
+enum INSTALLMENT_PAYMENT_STATE {
+  INSTALLMENT_PAYMENT_STATE_WAIT_FOT_ACTIVATE = 0;
+  INSTALLMENT_PAYMENT_STATE_ACTIVATED = 1;
+  INSTALLMENT_PAYMENT_STATE_OVERDUE = 2;
+  INSTALLMENT_PAYMENT_STATE_SETTLE = 3;
+  INSTALLMENT_PAYMENT_STATE_MANUAL_LOCKDOWN = 4;
+}
+
+enum INSTALLMENT_PAYMENT_OVERDUE_LIMIT {
+  INSTALLMENT_PAYMENT_OVERDUE_LIMIT_NONE = 0;
+  INSTALLMENT_PAYMENT_OVERDUE_LIMIT_CLOSE_OUTPUT = 1;
+}
+
+enum TIME_TASK_MODE {
+  TIME_TASK_MODE_RESV = 0;
+  TIME_TASK_MODE_PER_WEEK = 1;
+  TIME_TASK_MODE_ONCE = 2;
+}
+
+enum TIME_TASK_TYPE {
+  TIME_TASK_TYPE_AC_CHG = 0;
+  TIME_TASK_TYPE_AC_DSG = 1;
+  TIME_TASK_TYPE_AC2_DSG = 2;
+  TIME_TASK_TYPE_DC_CHG = 3;
+  TIME_TASK_TYPE_DC2_CHG = 4;
+  TIME_TASK_TYPE_DC_DSG = 5;
+  TIME_TASK_TYPE_OIL_ON = 6;
+  TIME_TASK_TYPE_OIL_OFF = 7;
+  TIME_TASK_TYPE_USB_CHG = 8;
+  TIME_TASK_TYPE_USB_DSG = 9;
+  TIME_TASK_TYPE_AC_BYPASS = 10;
+  TIME_TASK_TYPE_AC_DSG_ONLY = 11;
+}
+
+enum TIME_TASK_DETAIL_TYPE {
+  TIME_TASK_DETAIL_IDLE = 0;
+  TIME_TASK_DETAIL_POW = 1;
+  TIME_TASK_DETAIL_TEMP = 2;
+  TIME_TASK_DETAIL_LEVEL = 3;
+}
+
+message InstallmentPaymentServeBelone {
+  optional .SERVE_MIDDLEMEN serve_middlemen = 1;
+  optional .INSTALLMENT_PAYMENT_OVERDUE_LIMIT installment_payment_overdue_limit = 2;
+  optional .INSTALLMENT_PAYMENT_STATE installment_payment_state = 3;
+}
+
+message InstallmentPaymentServe {
+  optional .INSTALLMENT_PAYMENT_STATE installment_payment_state = 1;
+  optional uint32 installment_payment_start_utc_time = 2;
+  optional uint32 installment_payment_overdue_limit_utc_time = 3;
+}
+
+message ResetMiddlemenDeliverySetting {
+  optional .SERVE_MIDDLEMEN serve_middlemen = 1;
+}
+
+message CfgTouStrategy {
+  repeated uint32 tou_hours_strategy = 1;
+  optional uint32 tou_gird_chg_stop_soc = 2;
+}
+
+message CfgGridPrice {
+  optional uint32 timestamp = 1;
+}
+
+message CfgEnergyStrategyOperateMode {
+  optional bool operate_self_powered_open = 1;
+  optional bool operate_scheduled_open = 2;
+  optional bool operate_tou_mode_open = 3;
+}
+
+message TimeTaskParamDetail {
+  optional .TIME_TASK_DETAIL_TYPE type = 1;
+  optional float val = 2;
+}
+
+message TimeTaskItemV2 {
+  optional uint32 task_index = 1;
+  optional bool is_cfg = 2;
+  optional bool is_enable = 3;
+  optional uint32 conflict_flag = 4;
+  optional .TIME_TASK_MODE time_mode = 5;
+  optional uint32 time_param = 6;
+  optional uint32 time_table = 7;
+  optional .TIME_TASK_TYPE task_type = 8;
+  optional uint32 task_param = 9;
+  repeated .TimeTaskParamDetail task_param_detail = 10;
+}
+
+message TimeTaskItemV2List {
+  repeated .TimeTaskItemV2 time_task = 1;
+}
+
+message ConfigWrite {
+  optional .CfgTouStrategy cfg_tou_hours_strategy = 65;
+  optional .CfgGridPrice cfg_grid_price = 101;
+  optional uint32 cfg_backup_reverse_soc = 102;
+  optional .CfgEnergyStrategyOperateMode cfg_energy_strategy_operate_mode = 106;
+  optional bool cfg_installment_payment_serve_enable = 119;
+  optional .InstallmentPaymentServeBelone cfg_installment_payment_serve_belone = 120;
+  optional .InstallmentPaymentServe cfg_installment_payment_serve = 121;
+  optional .ResetMiddlemenDeliverySetting reset_middlemen_delivery_setting = 124;
+  optional .TimeTaskItemV2 cfg_time_task_v2_item = 127;
+}
+
+message ConfigWriteAck {
+  optional uint32 action_id = 1;
+  optional bool config_ok = 2;
+}
+
+message ConfigRead {
+  repeated uint32 action_id = 1;
+}
+
+message ConfigReadAck {
+  optional .TimeTaskItemV2List read_time_task_v2_list = 129;
+}
+
+message DisplayPropertyUpload {
+  optional uint32 plug_in_info_pv_h_flag = 39;
+  optional uint32 plug_in_info_pv_h_type = 40;
+  optional float pow_get_pv_h = 35;
+  optional uint32 plug_in_info_pv_l_flag = 42;
+  optional uint32 plug_in_info_pv_l_type = 43;
+  optional float pow_get_pv_l = 36;
+  optional uint32 plug_in_info_5p8_flag = 63;
+  optional uint32 plug_in_info_5p8_type = 64;
+  optional uint32 plug_in_info_5p8_detail = 65;
+  optional string plug_in_info_5p8_sn = 193;
+  optional float cms_batt_soc = 262;
+  optional uint32 cms_max_chg_soc = 270;
+  optional uint32 cms_min_dsg_soc = 271;
+  optional uint32 cms_batt_pow_out_max = 459;
+  optional uint32 cms_batt_pow_in_max = 460;
+  optional uint32 backup_reverse_soc = 461;
+  optional uint32 cms_batt_full_energy = 462;
+  optional bool installment_payment_serve_enable = 591;
+  optional .SERVE_MIDDLEMEN serve_middlemen = 592;
+  optional .INSTALLMENT_PAYMENT_OVERDUE_LIMIT installment_payment_overdue_limit = 593;
+  optional .INSTALLMENT_PAYMENT_STATE installment_payment_state = 594;
+  optional uint32 installment_payment_start_utc_time = 595;
+  optional uint32 installment_payment_overdue_limit_utc_time = 596;
+}
+
+message ReqTouStrategy {
+  optional uint32 req_state = 1;
+}
+
+message DevRequest {
+  optional uint32 dev_utc_time = 1;
+  optional float dev_utc_timezone = 2;
+  optional .ReqTouStrategy require_tou_strategy = 4;
+}
+
+message DevRequestAck {
+  optional uint32 request_id = 1;
+  optional uint32 require_ok = 2;
+}

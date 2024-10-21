@@ -1,0 +1,257 @@
+syntax = "proto2";
+
+package ft308;
+
+enum HEATING_ROD_STATE_T {
+  HEATING_ROD_STATE_NONE = 0;
+  HEATING_ROD_STATE_STANDBY = 1;
+  HEATING_ROD_STATE_ERROR = 2;
+  HEATING_ROD_STATE_HEATING = 3;
+  HEATING_ROD_STATE_DISINFECTION = 4;
+}
+
+enum KNOB_INFO_T {
+  KNOB_INFO_NONE = 0;
+  KNOB_INFO_SHORT = 1;
+  KNOB_INFO_LONG = 2;
+  KNOB_INFO_DOUBLE = 3;
+  KNOB_INFO_RESUME = 4;
+}
+
+message ErrorCodeHeartBeat {
+  repeated uint32 error_code = 1;
+}
+
+message HeatingRodHeartBeatParam {
+  optional sint32 heatingrod_state = 1;
+  optional float water_temperature = 2;
+  optional float pcb_temperature = 3;
+  optional float heatingrod_temperature_one = 4;
+  optional float heatingrod_temperature_two = 5;
+  optional sint32 constant_power_heat_set_temperature = 6;
+  optional sint32 constant_power_heat_set_power = 7;
+  optional sint32 auto_adjust_heat_set_temperature_one = 8;
+  optional sint32 auto_adjust_heat_set_time_one = 9;
+  optional sint32 auto_adjust_heat_set_temperature_two = 10;
+  optional sint32 auto_adjust_heat_set_time_two = 11;
+  optional float phase_a_voltage = 12;
+  optional float phase_b_voltage = 13;
+  optional float phase_c_voltage = 14;
+  optional float phase_a_current = 15;
+  optional sint32 relay_state = 16;
+  optional sint32 heatingrod_power = 17;
+  optional sint32 pv_power = 18;
+  optional sint32 timestamp = 19;
+  optional .ErrorCodeHeartBeat error_code = 20;
+  optional sint32 is_sterilization = 21;
+  optional sint32 water_tank_volume = 22;
+  optional sint32 network_type = 23;
+  optional int32 blue_state = 24;
+  optional sint32 lastHeatingMode = 25;
+  optional uint32 run_state = 26;
+  optional uint32 error_code_master = 27;
+  optional uint32 target_temp = 28;
+  optional uint32 target_power = 29;
+  optional uint32 target_run_state = 30;
+  optional sint32 sterilization_remain_time = 31;
+  optional sint32 sterilizaition_out_cmd = 32;
+  optional sint32 master_slave_flag = 33;
+}
+
+message ErrorCode {
+  optional string module_sn = 1;
+  repeated uint32 error_code = 2;
+  repeated bool error_state = 3;
+}
+
+message ErrorCodeReport {
+  optional .ErrorCode heatingrod_error_code = 1;
+}
+
+message HeatingRodSet {
+  optional sint32 close_heating_rod_cmd = 1;
+  optional sint32 heating_rod_mode = 2;
+  optional sint32 constant_power_heat_set_temperature = 3;
+  optional sint32 constant_power_heat_set_power = 4;
+  optional sint32 auto_adjust_heat_set_temperature_one = 5;
+  optional sint32 auto_adjust_heat_set_time_one = 6;
+  optional sint32 auto_adjust_heat_set_temperature_two = 7;
+  optional sint32 auto_adjust_heat_set_time_two = 8;
+  optional sint32 water_tank_volume = 9;
+  optional sint32 sterilizaition_out_cmd = 10;
+}
+
+message HeatingRodSetAck {
+  optional sint32 result = 1;
+}
+
+message GetHeatingRodSet {
+  optional bool has_close_heating_rod_cmd = 1;
+  optional bool has_heating_rod_mode = 2;
+  optional bool has_constant_power_heat_set_temperature = 3;
+  optional bool has_constant_power_heat_set_power = 4;
+  optional bool has_auto_adjust_heat_set_temperature_one = 5;
+  optional bool has_auto_adjust_heat_set_time_one = 6;
+  optional bool has_auto_adjust_heat_set_temperature_two = 7;
+  optional bool has_auto_adjust_heat_set_time_two = 8;
+  optional bool has_water_tank_volume = 9;
+  optional bool has_is_sterilization = 10;
+  optional bool has_sterilization_remain_time = 11;
+  optional bool has_sterilization_out_cmd = 12;
+  optional bool has_master_slave_flag = 13;
+}
+
+message GetHeatingRodSetAck {
+  optional sint32 close_heating_rod_cmd = 1;
+  optional sint32 heating_rod_mode = 2;
+  optional sint32 constant_power_heat_set_temperature = 3;
+  optional sint32 constant_power_heat_set_power = 4;
+  optional sint32 auto_adjust_heat_set_temperature_one = 5;
+  optional sint32 auto_adjust_heat_set_time_one = 6;
+  optional sint32 auto_adjust_heat_set_temperature_two = 7;
+  optional sint32 auto_adjust_heat_set_time_two = 8;
+  optional sint32 water_tank_volume = 9;
+  optional sint32 is_sterilization = 10;
+  optional sint32 sterilization_remain_time = 11;
+  optional sint32 has_sterilization_out_cmd = 12;
+  optional sint32 master_slave_flag = 13;
+}
+
+message SterilizationTimeTaskSet {
+  optional uint32 is_cfg = 1;
+  optional uint32 task_index = 2;
+  optional bool is_enable = 3;
+  optional bool is_effect = 4;
+  optional uint32 time_mode = 5;
+  optional uint32 time_param = 6;
+  optional uint32 time_table = 7;
+}
+
+message SterilizationTimeTaskSetAck {
+  optional uint32 task_index = 1;
+  optional uint32 sta = 2;
+}
+
+message SterilizationTimeTaskGet {
+  optional uint32 task_index = 1;
+}
+
+message SterilizationTimeTaskGetAck {
+  optional .SterilizationTimeTaskSet time_task_cfg = 1;
+}
+
+message EmsAllTimerTaskGet {
+}
+
+message EmsAllTimerTaskGetAck {
+  repeated .SterilizationTimeTaskSet time_task_cfg = 1;
+}
+
+message FactoryReset {
+  optional uint32 sys_reset = 1;
+}
+
+message FactoryResetAck {
+  optional sint32 result = 1;
+  optional uint32 sys_reset = 2;
+}
+
+message HeatingRodEnergyStreamReport {
+  optional float water_temperature = 1;
+  optional sint32 heatingrod_power_watth = 2;
+  optional sint32 pv_power_watth = 3;
+  optional sint32 gird_power_watth = 4;
+  optional uint32 timestamp = 5;
+  optional sint32 constant_power_heat_forecast_time = 6;
+  optional sint32 timezone = 7;
+}
+
+message HeatingRodEnergyStreamHistoryReport {
+  repeated .HeatingRodEnergyStreamReport history_energy_stream = 1;
+  optional uint32 seq = 2;
+}
+
+message HeatingRodEnergyStreamHistoryReportAck {
+  optional uint32 seq = 1;
+}
+
+message HeatingRodEnergyStreamSet {
+  optional bool open_energy_stream = 1;
+  optional bool need_push_immediately = 2;
+}
+
+message OnLineHeartbeat {
+  optional string module_sn = 1;
+  optional uint32 module_product_info = 2;
+  optional uint32 module_program_sta = 3;
+  optional uint32 module_apl_sw_ver = 4;
+  optional uint32 module_loader_sw_ver = 5;
+}
+
+message TemperatureSample {
+  optional float water_temperature = 1;
+  optional sint32 heatingrod_temperature_one = 2;
+  optional sint32 heatingrod_temperature_two = 3;
+  optional float heatingrod_temperature_fone = 4;
+  optional float heatingrod_temperature_ftwo = 5;
+}
+
+message TemperatureSampleAck {
+  optional sint32 result = 1;
+}
+
+message StateSync {
+  optional .HEATING_ROD_STATE_T heating_rod_state = 1;
+  optional sint32 target_temperature = 2;
+}
+
+message StateSyncAck {
+  optional sint32 result = 1;
+}
+
+message KnobSample {
+  optional sint32 knob_temperature = 1;
+  optional .KNOB_INFO_T knob_info = 2;
+}
+
+message KnobSampleAck {
+  optional sint32 result = 1;
+}
+
+message TibberEnergyStreamReport {
+  optional sint32 message_source = 1;
+  optional sint32 device_sta = 2;
+  optional sint32 timestamp = 3;
+  optional float power = 4;
+  optional float min_power = 5;
+  optional float max_power = 6;
+  optional float accumulated_consumption = 7;
+  optional float power_production = 8;
+  optional float min_power_production = 9;
+  optional float max_power_production = 10;
+  optional float accumulated_production = 11;
+}
+
+message EmsAllTimerTaskReport {
+  repeated .SterilizationTimeTaskSet time_task_cfg = 1;
+}
+
+message UpdateTimeZone {
+}
+
+message UpdateTimeZoneAck {
+  optional uint32 unix_time = 1;
+  optional sint32 time_zone = 2;
+  optional sint32 decimal_zone = 3;
+}
+
+message OutRelayCtrl {
+  optional uint32 out_relay_ctrl = 1;
+}
+
+message MasterSetHeatingRod {
+  optional uint32 target_temp = 1;
+  optional uint32 target_power = 2;
+  optional uint32 run_state_set = 3;
+  optional uint32 water_tank_volumn = 4;
+}

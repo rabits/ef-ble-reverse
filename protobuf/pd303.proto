@@ -1,6 +1,6 @@
 syntax = "proto2";
 
-option java_multiple_files = true;
+package pd303;
 
 enum POWER_STA {
   LOAD_CH_EG_POWER = 0;
@@ -115,9 +115,9 @@ message LoadTimeInfo {
 message BackupTimeInfo {
   repeated float ch_watt = 1;
   optional uint32 backup_discharge_time = 2;
-  optional .BackupEnergyTimeInfo energy_1 = 20;
-  optional .BackupEnergyTimeInfo energy_2 = 21;
-  optional .BackupEnergyTimeInfo energy_3 = 22;
+  optional .pd303.BackupEnergyTimeInfo energy_1 = 20;
+  optional .pd303.BackupEnergyTimeInfo energy_2 = 21;
+  optional .pd303.BackupEnergyTimeInfo energy_3 = 22;
 }
 
 message WattTimeInfo {
@@ -134,7 +134,7 @@ message MasterVerTimeInfo {
 }
 
 message MasterIncreInfo {
-  optional .ErrCode errcode = 1;
+  optional .pd303.ErrCode errcode = 1;
   optional uint32 grid_sta = 2;
   optional uint32 grid_vol = 3;
   optional uint32 master_rly1_cnt = 4;
@@ -159,19 +159,19 @@ message LoadSplitPhaseCfg {
 }
 
 message LoadChInfo {
-  optional .LoadSplitPhaseCfg splitphase = 1;
+  optional .pd303.LoadSplitPhaseCfg splitphase = 1;
   optional uint32 set_amp = 2;
   optional uint32 icon_num = 3;
   optional string ch_name = 4;
   optional uint32 load_rly_cnt = 5;
   optional float history_ch_watt_max = 6;
-  optional .LOAD_CH_STA load_sta = 7;
-  optional .CTRL_MODE ctrl_mode = 8;
+  optional .pd303.LOAD_CH_STA load_sta = 7;
+  optional .pd303.CTRL_MODE ctrl_mode = 8;
 }
 
 message LoadChSta {
-  optional .LOAD_CH_STA load_sta = 1;
-  optional .CTRL_MODE ctrl_mode = 2;
+  optional .pd303.LOAD_CH_STA load_sta = 1;
+  optional .pd303.CTRL_MODE ctrl_mode = 2;
   optional uint32 notice_set_time = 3;
   optional bool notice_enble = 4;
   optional uint32 notice_action = 5;
@@ -181,49 +181,49 @@ message LoadChSta {
 }
 
 message HallIncreInfo {
-  optional .ErrCode errcode = 1;
-  optional .ModelInfo model_info = 2;
+  optional .pd303.ErrCode errcode = 1;
+  optional .pd303.ModelInfo model_info = 2;
   optional uint32 mid_prority_discharge_time = 3;
   optional uint32 high_prority_discharge_time = 4;
-  optional .LoadChInfo ch1_info = 30;
-  optional .LoadChInfo ch2_info = 31;
-  optional .LoadChInfo ch3_info = 32;
-  optional .LoadChInfo ch4_info = 33;
-  optional .LoadChInfo ch5_info = 34;
-  optional .LoadChInfo ch6_info = 35;
-  optional .LoadChInfo ch7_info = 36;
-  optional .LoadChInfo ch8_info = 37;
-  optional .LoadChInfo ch9_info = 38;
-  optional .LoadChInfo ch10_info = 39;
-  optional .LoadChInfo ch11_info = 40;
-  optional .LoadChInfo ch12_info = 41;
-  optional .LoadChSta ch1_sta = 90;
-  optional .LoadChSta ch2_sta = 91;
-  optional .LoadChSta ch3_sta = 92;
-  optional .LoadChSta ch4_sta = 93;
-  optional .LoadChSta ch5_sta = 94;
-  optional .LoadChSta ch6_sta = 95;
-  optional .LoadChSta ch7_sta = 96;
-  optional .LoadChSta ch8_sta = 97;
-  optional .LoadChSta ch9_sta = 98;
-  optional .LoadChSta ch10_sta = 99;
-  optional .LoadChSta ch11_sta = 100;
-  optional .LoadChSta ch12_sta = 101;
+  optional .pd303.LoadChInfo ch1_info = 30;
+  optional .pd303.LoadChInfo ch2_info = 31;
+  optional .pd303.LoadChInfo ch3_info = 32;
+  optional .pd303.LoadChInfo ch4_info = 33;
+  optional .pd303.LoadChInfo ch5_info = 34;
+  optional .pd303.LoadChInfo ch6_info = 35;
+  optional .pd303.LoadChInfo ch7_info = 36;
+  optional .pd303.LoadChInfo ch8_info = 37;
+  optional .pd303.LoadChInfo ch9_info = 38;
+  optional .pd303.LoadChInfo ch10_info = 39;
+  optional .pd303.LoadChInfo ch11_info = 40;
+  optional .pd303.LoadChInfo ch12_info = 41;
+  optional .pd303.LoadChSta ch1_sta = 90;
+  optional .pd303.LoadChSta ch2_sta = 91;
+  optional .pd303.LoadChSta ch3_sta = 92;
+  optional .pd303.LoadChSta ch4_sta = 93;
+  optional .pd303.LoadChSta ch5_sta = 94;
+  optional .pd303.LoadChSta ch6_sta = 95;
+  optional .pd303.LoadChSta ch7_sta = 96;
+  optional .pd303.LoadChSta ch8_sta = 97;
+  optional .pd303.LoadChSta ch9_sta = 98;
+  optional .pd303.LoadChSta ch10_sta = 99;
+  optional .pd303.LoadChSta ch11_sta = 100;
+  optional .pd303.LoadChSta ch12_sta = 101;
 }
 
 message LoadIncreInfo {
-  optional .HallIncreInfo hall1_incre_info = 1;
+  optional .pd303.HallIncreInfo hall1_incre_info = 1;
 }
 
 message BackupEnergyIncreDevInfo {
-  optional .ModelInfo model_info = 1;
+  optional .pd303.ModelInfo model_info = 1;
   optional uint32 type = 2;
   optional uint32 full_cap = 3;
   optional float rate_power = 4;
 }
 
 message BackupEnergyIncreInfo {
-  optional .BackupEnergyIncreDevInfo dev_info = 1;
+  optional .pd303.BackupEnergyIncreDevInfo dev_info = 1;
   optional uint32 is_enable = 2;
   optional uint32 is_connect = 3;
   optional uint32 is_ac_open = 4;
@@ -246,8 +246,8 @@ message BackupEnergyIncreInfo {
 
 message BackupChannelInfo {
   optional bool backup_is_ready = 1;
-  optional .BACKUP_CH_STA ctrl_sta = 2;
-  optional .FORCE_CHARGE_STA force_charge_sta = 3;
+  optional .pd303.BACKUP_CH_STA ctrl_sta = 2;
+  optional .pd303.FORCE_CHARGE_STA force_charge_sta = 3;
   optional uint32 backup_rly1_cnt = 4;
   optional uint32 backup_rly2_cnt = 5;
   optional uint32 wake_up_charge_sta = 6;
@@ -255,7 +255,7 @@ message BackupChannelInfo {
 }
 
 message ProBackupEnergyIncreInfo {
-  optional .ModelInfo model_info = 1;
+  optional .pd303.ModelInfo model_info = 1;
   optional uint32 is_connect = 2;
   optional uint32 battery_soc = 3;
   optional uint32 full_cap = 4;
@@ -272,19 +272,19 @@ message ProBackupEnergyIncreInfo {
 }
 
 message BackupIncreInfo {
-  optional .ErrCode errcode = 1;
+  optional .pd303.ErrCode errcode = 1;
   optional uint32 backup_full_cap = 2;
   optional uint32 backup_bat_per = 3;
   optional float backup_discharge_rmain_bat_cap = 4;
   optional float cur_discharge_soc = 5;
-  optional .BackupChannelInfo ch1_info = 60;
-  optional .BackupChannelInfo ch2_info = 61;
-  optional .BackupChannelInfo ch3_info = 62;
-  optional .BackupEnergyIncreInfo Energy1_info = 80;
-  optional .BackupEnergyIncreInfo Energy2_info = 81;
-  optional .BackupEnergyIncreInfo Energy3_info = 82;
-  optional .ProBackupEnergyIncreInfo Delta_pro1_info = 90;
-  optional .ProBackupEnergyIncreInfo Delta_pro2_info = 91;
+  optional .pd303.BackupChannelInfo ch1_info = 60;
+  optional .pd303.BackupChannelInfo ch2_info = 61;
+  optional .pd303.BackupChannelInfo ch3_info = 62;
+  optional .pd303.BackupEnergyIncreInfo Energy1_info = 80;
+  optional .pd303.BackupEnergyIncreInfo Energy2_info = 81;
+  optional .pd303.BackupEnergyIncreInfo Energy3_info = 82;
+  optional .pd303.ProBackupEnergyIncreInfo Delta_pro1_info = 90;
+  optional .pd303.ProBackupEnergyIncreInfo Delta_pro2_info = 91;
 }
 
 message StrategyChInfo {
@@ -298,17 +298,17 @@ message EmergencyStrategy {
   optional uint32 backup_mode = 2;
   optional uint32 overload_mode = 3;
   optional uint32 mid_priority_ch_discharge_low = 4;
-  repeated .StrategyChInfo hall1_ch_info = 5;
+  repeated .pd303.StrategyChInfo hall1_ch_info = 5;
   optional bool is_enable = 7;
 }
 
 message TimeRangeStrategy {
   optional bool is_cfg = 1;
   optional bool is_enable = 2;
-  optional .STRATEGY_TIME_MODE time_mode = 3;
+  optional .pd303.STRATEGY_TIME_MODE time_mode = 3;
   optional uint32 time_data = 4;
-  optional .RtcHalData start_time = 5;
-  optional .RtcHalData stop_time = 6;
+  optional .pd303.RtcHalData start_time = 5;
+  optional .pd303.RtcHalData stop_time = 6;
 }
 
 message TimeScaleSta {
@@ -318,10 +318,10 @@ message TimeScaleSta {
 message TimeTaskComCfg {
   optional bool is_cfg = 1;
   optional bool is_enable = 2;
-  optional .TIME_TASK_TYPE_LIST type = 3;
-  optional .RtcHalData set_time = 4;
-  optional .TimeRangeStrategy time_range = 5;
-  optional .TimeScaleSta time_scale = 6;
+  optional .pd303.TIME_TASK_TYPE_LIST type = 3;
+  optional .pd303.RtcHalData set_time = 4;
+  optional .pd303.TimeRangeStrategy time_range = 5;
+  optional .pd303.TimeScaleSta time_scale = 6;
 }
 
 message BackupChargeCfg {
@@ -344,26 +344,26 @@ message ChargeTimeCfg {
   optional uint32 ch_charge_watt = 1;
   optional uint32 low_battery = 2;
   optional uint32 hight_battery = 3;
-  repeated .StrategyChInfo backup_ch_info = 4;
+  repeated .pd303.StrategyChInfo backup_ch_info = 4;
 }
 
 message DischargeTimeCfg {
   optional uint32 mid_priority_ch_discharge_low = 1;
-  repeated .StrategyChInfo hall1_ch_info = 2;
+  repeated .pd303.StrategyChInfo hall1_ch_info = 2;
 }
 
 message TimeTaskCfg {
-  optional .TimeTaskComCfg com_cfg = 1;
-  optional .ChargeTimeCfg charge_cfg = 2;
-  optional .DischargeTimeCfg discharge_cfg = 3;
+  optional .pd303.TimeTaskComCfg com_cfg = 1;
+  optional .pd303.ChargeTimeCfg charge_cfg = 2;
+  optional .pd303.DischargeTimeCfg discharge_cfg = 3;
 }
 
 message ProtoTime {
-  optional .MasterTimeInfo master_info = 1;
-  optional .LoadTimeInfo load_info = 2;
-  optional .BackupTimeInfo backup_info = 3;
-  optional .WattTimeInfo watt_info = 4;
-  optional .MasterVerTimeInfo master_ver_info = 5;
+  optional .pd303.MasterTimeInfo master_info = 1;
+  optional .pd303.LoadTimeInfo load_info = 2;
+  optional .pd303.BackupTimeInfo backup_info = 3;
+  optional .pd303.WattTimeInfo watt_info = 4;
+  optional .pd303.MasterVerTimeInfo master_ver_info = 5;
 }
 
 message SysEventRecordItem {
@@ -375,7 +375,7 @@ message SysEventRecordItem {
 
 message SysEventRecordReport {
   optional uint32 event_seq = 1;
-  repeated .SysEventRecordItem event_report = 2;
+  repeated .pd303.SysEventRecordItem event_report = 2;
 }
 
 message SysEventInfoReportAck {
@@ -390,12 +390,12 @@ message TouData {
 message ProtoPushAndSet {
   optional uint32 grid_vol = 1;
   optional uint32 grid_freq = 2;
-  optional .PRODUCT_TYPE product_tpye = 3;
+  optional .pd303.PRODUCT_TYPE product_tpye = 3;
   optional bool eps_mode_info = 5;
   optional uint32 foce_charge_hight = 6;
   optional uint32 charge_watt_power = 7;
   optional uint32 disc_lower = 8;
-  optional .POWER_STA power_sta = 9;
+  optional .pd303.POWER_STA power_sta = 9;
   optional uint32 master_cur = 10;
   optional bool is_set_oil_engine = 11;
   optional uint32 oil_engine_watt = 12;
@@ -403,9 +403,9 @@ message ProtoPushAndSet {
   optional bool has_config_done = 15;
   optional bool is_area_err = 16;
   optional string area = 17;
-  optional .FORCE_CHARGE_STA ch1_force_charge = 18;
-  optional .FORCE_CHARGE_STA ch2_force_charge = 19;
-  optional .FORCE_CHARGE_STA ch3_force_charge = 20;
+  optional .pd303.FORCE_CHARGE_STA ch1_force_charge = 18;
+  optional .pd303.FORCE_CHARGE_STA ch2_force_charge = 19;
+  optional .pd303.FORCE_CHARGE_STA ch3_force_charge = 20;
   optional bool storm_is_enable = 21;
   optional uint32 storm_end_timestamp = 22;
   optional bool in_storm_mode = 23;
@@ -414,30 +414,30 @@ message ProtoPushAndSet {
   optional uint32 ch3_enable_set = 26;
   optional uint32 oil_engine_to_back_charge_persent = 27;
   optional uint32 clear_ntc_over_temp_err = 28;
-  optional .EmergencyStrategy LoadStrategyCfg = 30;
-  optional .TimeTaskCfg TimeTaskCfg_1 = 31;
-  optional .TimeTaskCfg TimeTaskCfg_2 = 32;
-  optional .TimeTaskCfg TimeTaskCfg_3 = 33;
-  optional .TimeTaskCfg TimeTaskCfg_4 = 34;
-  optional .TimeTaskCfg TimeTaskCfg_5 = 35;
-  optional .TimeTaskCfg TimeTaskCfg_6 = 36;
-  optional .TimeTaskCfg TimeTaskCfg_7 = 37;
-  optional .TimeTaskCfg TimeTaskCfg_8 = 38;
-  optional .TimeTaskCfg TimeTaskCfg_9 = 39;
-  optional .TimeTaskCfg TimeTaskCfg_10 = 40;
+  optional .pd303.EmergencyStrategy LoadStrategyCfg = 30;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_1 = 31;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_2 = 32;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_3 = 33;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_4 = 34;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_5 = 35;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_6 = 36;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_7 = 37;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_8 = 38;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_9 = 39;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_10 = 40;
   optional uint32 ntc_over_temp_err = 41;
   optional uint32 smart_backup_mode = 61;
   optional uint32 backup_reserve_enable = 62;
   optional uint32 backup_reserve_soc = 63;
   optional uint32 localTime = 64;
-  optional .TouData toudata = 65;
+  optional .pd303.TouData toudata = 65;
   optional float time_zone = 66;
   optional uint32 solar_backup_reserve_soc = 67;
   optional uint32 oil_type = 70;
   optional uint32 oil_max_output_watt = 71;
-  optional .BackupIncreInfo backup_incre_info = 80;
-  optional .LoadIncreInfo load_incre_info = 81;
-  optional .MasterIncreInfo master_incre_info = 82;
+  optional .pd303.BackupIncreInfo backup_incre_info = 80;
+  optional .pd303.LoadIncreInfo load_incre_info = 81;
+  optional .pd303.MasterIncreInfo master_incre_info = 82;
   optional uint32 storm_request_flag = 90;
   optional uint32 storm_cur_time_stop_flag = 91;
   optional uint32 sys_cur_running_state = 92;
@@ -459,7 +459,7 @@ message ProtoPushAndSet {
 }
 
 message BackupProtoTime {
-  optional .BackupTimeInfo backup_info = 1;
+  optional .pd303.BackupTimeInfo backup_info = 1;
 }
 
 message LoadSafeDataTime {
@@ -469,8 +469,8 @@ message LoadSafeDataTime {
 }
 
 message LoadProtoTime {
-  optional .LoadTimeInfo load_info = 1;
-  optional .LoadSafeDataTime load_safe_time = 2;
+  optional .pd303.LoadTimeInfo load_info = 1;
+  optional .pd303.LoadSafeDataTime load_safe_time = 2;
 }
 
 message LoadHeartBeatTime {
@@ -483,7 +483,7 @@ message BackHeartTime {
 
 message MasterToBackHeartBeatTime {
   optional uint32 time_stamp = 1;
-  optional .GRID_STATUS grid_status = 2;
+  optional .pd303.GRID_STATUS grid_status = 2;
   optional uint32 error_state = 3;
   optional uint32 phase_sub_value = 4;
 }
@@ -496,34 +496,34 @@ message MasterToBackProtoPushAndSet {
   optional uint32 grid_vol = 1;
   optional uint32 grid_freq = 2;
   optional bool stop_key_status = 3;
-  optional .GRID_STATUS grid_status = 4;
+  optional .pd303.GRID_STATUS grid_status = 4;
   optional bool is_area_err = 5;
   optional uint32 master_to_back_time_stamp = 6;
   optional bool is_get_backup_info = 7;
   optional uint32 open_door_flag = 8;
   optional uint32 overall_err_sta = 9;
-  optional .BackupChargeCfg ch1_charge_cfg = 10;
-  optional .BackupChargeCfg ch2_charge_cfg = 11;
-  optional .BackupChargeCfg ch3_charge_cfg = 12;
+  optional .pd303.BackupChargeCfg ch1_charge_cfg = 10;
+  optional .pd303.BackupChargeCfg ch2_charge_cfg = 11;
+  optional .pd303.BackupChargeCfg ch3_charge_cfg = 12;
   optional uint32 ch1_enable_set = 13;
   optional uint32 ch2_enable_set = 14;
   optional uint32 ch3_enable_set = 15;
-  optional .BackupDischargeCfg ch1_discharge_cfg = 30;
-  optional .BackupDischargeCfg ch2_discharge_cfg = 31;
-  optional .BackupDischargeCfg ch3_discharge_cfg = 32;
+  optional .pd303.BackupDischargeCfg ch1_discharge_cfg = 30;
+  optional .pd303.BackupDischargeCfg ch2_discharge_cfg = 31;
+  optional .pd303.BackupDischargeCfg ch3_discharge_cfg = 32;
   optional float overall_load_pwr = 33;
   optional float overall_load_pwr_L2 = 34;
-  optional .FORCE_CHARGE_STA ch1_force_charge = 50;
-  optional .FORCE_CHARGE_STA ch2_force_charge = 51;
-  optional .FORCE_CHARGE_STA ch3_force_charge = 52;
-  optional .ModelInfo mc_model_info = 70;
+  optional .pd303.FORCE_CHARGE_STA ch1_force_charge = 50;
+  optional .pd303.FORCE_CHARGE_STA ch2_force_charge = 51;
+  optional .pd303.FORCE_CHARGE_STA ch3_force_charge = 52;
+  optional .pd303.ModelInfo mc_model_info = 70;
 }
 
 message BackToMasterProtoPush {
   optional uint32 max_power = 1;
   optional uint32 output_power = 2;
-  optional .BackupIncreInfo backup_incre_info = 3;
-  optional .BACKUP_CH_STA backup_sys_sta = 4;
+  optional .pd303.BackupIncreInfo backup_incre_info = 3;
+  optional .pd303.BACKUP_CH_STA backup_sys_sta = 4;
   optional uint32 back_to_master_time_stamp = 5;
   optional bool get_master_init_sta = 6;
   optional float backup_vol_L1 = 7;
@@ -543,61 +543,61 @@ message BackToMasterProtoPush {
 }
 
 message MasterToLoadInfo {
-  optional .LoadChInfo ch1_info = 30;
-  optional .LoadChInfo ch2_info = 31;
-  optional .LoadChInfo ch3_info = 32;
-  optional .LoadChInfo ch4_info = 33;
-  optional .LoadChInfo ch5_info = 34;
-  optional .LoadChInfo ch6_info = 35;
-  optional .LoadChInfo ch7_info = 36;
-  optional .LoadChInfo ch8_info = 37;
-  optional .LoadChInfo ch9_info = 38;
-  optional .LoadChInfo ch10_info = 39;
-  optional .LoadChInfo ch11_info = 40;
-  optional .LoadChInfo ch12_info = 41;
-  optional .LoadChSta ch1_sta = 90;
-  optional .LoadChSta ch2_sta = 91;
-  optional .LoadChSta ch3_sta = 92;
-  optional .LoadChSta ch4_sta = 93;
-  optional .LoadChSta ch5_sta = 94;
-  optional .LoadChSta ch6_sta = 95;
-  optional .LoadChSta ch7_sta = 96;
-  optional .LoadChSta ch8_sta = 97;
-  optional .LoadChSta ch9_sta = 98;
-  optional .LoadChSta ch10_sta = 99;
-  optional .LoadChSta ch11_sta = 100;
-  optional .LoadChSta ch12_sta = 101;
-  optional .StrategyChInfo ch1_stra_info = 160;
-  optional .StrategyChInfo ch2_stra_info = 161;
-  optional .StrategyChInfo ch3_stra_info = 162;
-  optional .StrategyChInfo ch4_stra_info = 163;
-  optional .StrategyChInfo ch5_stra_info = 164;
-  optional .StrategyChInfo ch6_stra_info = 165;
-  optional .StrategyChInfo ch7_stra_info = 166;
-  optional .StrategyChInfo ch8_stra_info = 167;
-  optional .StrategyChInfo ch9_stra_info = 168;
-  optional .StrategyChInfo ch10_stra_info = 169;
-  optional .StrategyChInfo ch11_stra_info = 170;
-  optional .StrategyChInfo ch12_stra_info = 171;
-  optional .StrategyChInfo ch1_oil_info = 210;
-  optional .StrategyChInfo ch2_oil_info = 211;
-  optional .StrategyChInfo ch3_oil_info = 212;
-  optional .StrategyChInfo ch4_oil_info = 213;
-  optional .StrategyChInfo ch5_oil_info = 214;
-  optional .StrategyChInfo ch6_oil_info = 215;
-  optional .StrategyChInfo ch7_oil_info = 216;
-  optional .StrategyChInfo ch8_oil_info = 217;
-  optional .StrategyChInfo ch9_oil_info = 218;
-  optional .StrategyChInfo ch10_oil_info = 219;
-  optional .StrategyChInfo ch11_oil_info = 220;
-  optional .StrategyChInfo ch12_oil_info = 221;
+  optional .pd303.LoadChInfo ch1_info = 30;
+  optional .pd303.LoadChInfo ch2_info = 31;
+  optional .pd303.LoadChInfo ch3_info = 32;
+  optional .pd303.LoadChInfo ch4_info = 33;
+  optional .pd303.LoadChInfo ch5_info = 34;
+  optional .pd303.LoadChInfo ch6_info = 35;
+  optional .pd303.LoadChInfo ch7_info = 36;
+  optional .pd303.LoadChInfo ch8_info = 37;
+  optional .pd303.LoadChInfo ch9_info = 38;
+  optional .pd303.LoadChInfo ch10_info = 39;
+  optional .pd303.LoadChInfo ch11_info = 40;
+  optional .pd303.LoadChInfo ch12_info = 41;
+  optional .pd303.LoadChSta ch1_sta = 90;
+  optional .pd303.LoadChSta ch2_sta = 91;
+  optional .pd303.LoadChSta ch3_sta = 92;
+  optional .pd303.LoadChSta ch4_sta = 93;
+  optional .pd303.LoadChSta ch5_sta = 94;
+  optional .pd303.LoadChSta ch6_sta = 95;
+  optional .pd303.LoadChSta ch7_sta = 96;
+  optional .pd303.LoadChSta ch8_sta = 97;
+  optional .pd303.LoadChSta ch9_sta = 98;
+  optional .pd303.LoadChSta ch10_sta = 99;
+  optional .pd303.LoadChSta ch11_sta = 100;
+  optional .pd303.LoadChSta ch12_sta = 101;
+  optional .pd303.StrategyChInfo ch1_stra_info = 160;
+  optional .pd303.StrategyChInfo ch2_stra_info = 161;
+  optional .pd303.StrategyChInfo ch3_stra_info = 162;
+  optional .pd303.StrategyChInfo ch4_stra_info = 163;
+  optional .pd303.StrategyChInfo ch5_stra_info = 164;
+  optional .pd303.StrategyChInfo ch6_stra_info = 165;
+  optional .pd303.StrategyChInfo ch7_stra_info = 166;
+  optional .pd303.StrategyChInfo ch8_stra_info = 167;
+  optional .pd303.StrategyChInfo ch9_stra_info = 168;
+  optional .pd303.StrategyChInfo ch10_stra_info = 169;
+  optional .pd303.StrategyChInfo ch11_stra_info = 170;
+  optional .pd303.StrategyChInfo ch12_stra_info = 171;
+  optional .pd303.StrategyChInfo ch1_oil_info = 210;
+  optional .pd303.StrategyChInfo ch2_oil_info = 211;
+  optional .pd303.StrategyChInfo ch3_oil_info = 212;
+  optional .pd303.StrategyChInfo ch4_oil_info = 213;
+  optional .pd303.StrategyChInfo ch5_oil_info = 214;
+  optional .pd303.StrategyChInfo ch6_oil_info = 215;
+  optional .pd303.StrategyChInfo ch7_oil_info = 216;
+  optional .pd303.StrategyChInfo ch8_oil_info = 217;
+  optional .pd303.StrategyChInfo ch9_oil_info = 218;
+  optional .pd303.StrategyChInfo ch10_oil_info = 219;
+  optional .pd303.StrategyChInfo ch11_oil_info = 220;
+  optional .pd303.StrategyChInfo ch12_oil_info = 221;
 }
 
 message MasterToLoadProtoPushAndSet {
   optional uint32 max_power = 1;
   optional uint32 output_power = 2;
   optional bool stop_key_statu = 3;
-  optional .POWER_STA power_sta = 4;
+  optional .pd303.POWER_STA power_sta = 4;
   optional uint32 master_to_load_time_stamp = 5;
   optional bool get_load_init_sta = 6;
   optional uint32 grid_vol = 7;
@@ -608,35 +608,35 @@ message MasterToLoadProtoPushAndSet {
   optional float ntc_value_1 = 12;
   optional float ntc_value_2 = 13;
   optional uint32 oil_output_max_power = 14;
-  optional .OIL_POWER_STA oil_power_sta = 15;
-  optional .MasterToLoadInfo hall1_incre_info = 30;
+  optional .pd303.OIL_POWER_STA oil_power_sta = 15;
+  optional .pd303.MasterToLoadInfo hall1_incre_info = 30;
 }
 
 message LoadtToMasterInfo {
-  optional .ErrCode errcode = 1;
-  optional .ModelInfo model_info = 2;
+  optional .pd303.ErrCode errcode = 1;
+  optional .pd303.ModelInfo model_info = 2;
   optional uint32 board_ntc_temp = 3;
   optional uint32 load_to_master_time_stamp = 4;
   optional bool is_get_master_info = 5;
   optional uint32 mid_prority_discharge_time = 6;
   optional uint32 high_prority_discharge_time = 7;
   optional uint32 all_load_ch_close_flag = 8;
-  optional .LoadChSta load_ch1_sta = 20;
-  optional .LoadChSta load_ch2_sta = 21;
-  optional .LoadChSta load_ch3_sta = 22;
-  optional .LoadChSta load_ch4_sta = 23;
-  optional .LoadChSta load_ch5_sta = 24;
-  optional .LoadChSta load_ch6_sta = 25;
-  optional .LoadChSta load_ch7_sta = 26;
-  optional .LoadChSta load_ch8_sta = 27;
-  optional .LoadChSta load_ch9_sta = 28;
-  optional .LoadChSta load_ch10_sta = 29;
-  optional .LoadChSta load_ch11_sta = 30;
-  optional .LoadChSta load_ch12_sta = 31;
+  optional .pd303.LoadChSta load_ch1_sta = 20;
+  optional .pd303.LoadChSta load_ch2_sta = 21;
+  optional .pd303.LoadChSta load_ch3_sta = 22;
+  optional .pd303.LoadChSta load_ch4_sta = 23;
+  optional .pd303.LoadChSta load_ch5_sta = 24;
+  optional .pd303.LoadChSta load_ch6_sta = 25;
+  optional .pd303.LoadChSta load_ch7_sta = 26;
+  optional .pd303.LoadChSta load_ch8_sta = 27;
+  optional .pd303.LoadChSta load_ch9_sta = 28;
+  optional .pd303.LoadChSta load_ch10_sta = 29;
+  optional .pd303.LoadChSta load_ch11_sta = 30;
+  optional .pd303.LoadChSta load_ch12_sta = 31;
 }
 
 message LoadtToMasterProtoPushAndSet {
-  optional .LoadtToMasterInfo load_to_master_info1 = 30;
+  optional .pd303.LoadtToMasterInfo load_to_master_info1 = 30;
   optional float load_vol_L1 = 33;
   optional float load_vol_L2 = 34;
   optional uint32 load_phase_diff = 35;
@@ -654,13 +654,13 @@ message ChInfo {
 
 message BroadCastLoadInfo {
   optional uint32 can_adrr = 1;
-  repeated .ChInfo ch_info = 2;
+  repeated .pd303.ChInfo ch_info = 2;
 }
 
 message sys_info_param_save {
   optional uint32 grid_vol = 1;
   optional uint32 grid_freq = 2;
-  optional .PRODUCT_TYPE product_tpye = 3;
+  optional .pd303.PRODUCT_TYPE product_tpye = 3;
   optional bool eps_mode_info = 4;
   optional uint32 foce_charge_hight = 5;
   optional uint32 charge_watt_power = 6;
@@ -707,36 +707,36 @@ message sys_info_param_save {
 }
 
 message strategy_param_save {
-  optional .EmergencyStrategy LoadStrategyCfg = 30;
-  optional .TimeTaskCfg TimeTaskCfg_1 = 31;
-  optional .TimeTaskCfg TimeTaskCfg_2 = 32;
-  optional .TimeTaskCfg TimeTaskCfg_3 = 33;
-  optional .TimeTaskCfg TimeTaskCfg_4 = 34;
-  optional .TimeTaskCfg TimeTaskCfg_5 = 35;
-  optional .TimeTaskCfg TimeTaskCfg_6 = 36;
-  optional .TimeTaskCfg TimeTaskCfg_7 = 37;
-  optional .TimeTaskCfg TimeTaskCfg_8 = 38;
-  optional .TimeTaskCfg TimeTaskCfg_9 = 39;
-  optional .TimeTaskCfg TimeTaskCfg_10 = 40;
+  optional .pd303.EmergencyStrategy LoadStrategyCfg = 30;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_1 = 31;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_2 = 32;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_3 = 33;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_4 = 34;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_5 = 35;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_6 = 36;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_7 = 37;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_8 = 38;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_9 = 39;
+  optional .pd303.TimeTaskCfg TimeTaskCfg_10 = 40;
 }
 
 message hall_param {
-  optional .LoadChInfo ch1_info = 30;
-  optional .LoadChInfo ch2_info = 31;
-  optional .LoadChInfo ch3_info = 32;
-  optional .LoadChInfo ch4_info = 33;
-  optional .LoadChInfo ch5_info = 34;
-  optional .LoadChInfo ch6_info = 35;
-  optional .LoadChInfo ch7_info = 36;
-  optional .LoadChInfo ch8_info = 37;
-  optional .LoadChInfo ch9_info = 38;
-  optional .LoadChInfo ch10_info = 39;
-  optional .LoadChInfo ch11_info = 40;
-  optional .LoadChInfo ch12_info = 41;
+  optional .pd303.LoadChInfo ch1_info = 30;
+  optional .pd303.LoadChInfo ch2_info = 31;
+  optional .pd303.LoadChInfo ch3_info = 32;
+  optional .pd303.LoadChInfo ch4_info = 33;
+  optional .pd303.LoadChInfo ch5_info = 34;
+  optional .pd303.LoadChInfo ch6_info = 35;
+  optional .pd303.LoadChInfo ch7_info = 36;
+  optional .pd303.LoadChInfo ch8_info = 37;
+  optional .pd303.LoadChInfo ch9_info = 38;
+  optional .pd303.LoadChInfo ch10_info = 39;
+  optional .pd303.LoadChInfo ch11_info = 40;
+  optional .pd303.LoadChInfo ch12_info = 41;
 }
 
 message load_param_save {
-  optional .hall_param hall1_param = 1;
+  optional .pd303.hall_param hall1_param = 1;
   optional uint32 grid_freq = 2;
 }
 
@@ -749,13 +749,13 @@ message backup_chanel_info {
 message backup_param_save {
   optional uint32 grid_vol = 1;
   optional uint32 grid_freq = 2;
-  optional .backup_chanel_info backup_chanel1_info = 3;
-  optional .backup_chanel_info backup_chanel2_info = 4;
-  optional .backup_chanel_info backup_chanel3_info = 5;
+  optional .pd303.backup_chanel_info backup_chanel1_info = 3;
+  optional .pd303.backup_chanel_info backup_chanel2_info = 4;
+  optional .pd303.backup_chanel_info backup_chanel3_info = 5;
   optional uint32 phase_diff = 6;
-  optional .BackupDischargeCfg ch1_discharge_cfg = 30;
-  optional .BackupDischargeCfg ch2_discharge_cfg = 31;
-  optional .BackupDischargeCfg ch3_discharge_cfg = 32;
+  optional .pd303.BackupDischargeCfg ch1_discharge_cfg = 30;
+  optional .pd303.BackupDischargeCfg ch2_discharge_cfg = 31;
+  optional .pd303.BackupDischargeCfg ch3_discharge_cfg = 32;
 }
 
 message StatisticsItem {
@@ -767,7 +767,7 @@ message StatisticsItem {
 
 message StatisticsTotalReport {
   optional uint32 item_seq = 1;
-  repeated .StatisticsItem item_data = 2;
+  repeated .pd303.StatisticsItem item_data = 2;
 }
 
 message StatisticsTotalReportAck {

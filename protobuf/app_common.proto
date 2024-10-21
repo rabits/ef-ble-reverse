@@ -1,0 +1,61 @@
+syntax = "proto2";
+
+package app;
+
+enum Type {
+  RAW = 0;
+  JSON = 1;
+  PROTOBUF = 2;
+}
+
+enum AppId {
+  NONE_APPID = 0;
+  ECOFLOW = -1;
+  ECOFLOW_PRO = 777;
+  MONITOR = 666;
+}
+
+enum Method {
+  NONE_METHOD = 0;
+  GET_YJ751_SYSTEM_LATEST_QUOTA = 1;
+  YJ751_COMPOSE_NETWORK = 2;
+}
+
+enum AppCmdSets {
+  NONE_CMD_SETS = 0;
+  APP_CMD_SET = 810;
+}
+
+enum AppCmdId {
+  NONE_CMD_ID = 0;
+  APP_REQUEST_CMD_ID = 16;
+  APP_RESPONSE_CMD_ID = 17;
+}
+
+message AppBizDataRequest {
+  message ParamsEntry {
+    option map_entry = true;
+    
+    optional string key = 1;
+    optional string value = 2;
+  }
+  
+  optional uint64 id = 1;
+  optional int32 appid = 2;
+  optional string lang = 3;
+  optional string platform = 4;
+  optional string version = 5;
+  optional string method = 6;
+  repeated .AppBizDataRequest.ParamsEntry params = 7;
+}
+
+message AppBizDataResponse {
+  optional uint64 id = 1;
+  optional int32 appid = 2;
+  optional string lang = 3;
+  optional string platform = 4;
+  optional string version = 5;
+  optional string method = 6;
+  optional uint32 code = 7;
+  optional bytes data = 8;
+}

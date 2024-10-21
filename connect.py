@@ -20,7 +20,9 @@ from fastcrc import crc16, crc8
 from Crypto.Cipher import AES
 from Crypto.Util.Padding import pad, unpad
 
-import pd303_pb2
+import utc_sys_pb2_v4 as utc_sys_pb2
+import yj751_sys_pb2_v4 as yj751_sys_pb2
+import pd303_pb2_v4 as pd303_pb2
 
 # When you device is bond to your account - it's storing the user_id,
 # which is on of the keys in auth procedure, so UserID need to be extracted.
@@ -34,7 +36,7 @@ import pd303_pb2
 USER_ID = None
 
 # BT Address to connect to - otherwise will just print the found devices and bail
-# ADDRESS = "A1:B2:C3:D4:E5:F6"
+#ADDRESS = "A1:B2:C3:D4:E5:F6"
 ADDRESS = None
 
 _login_key = b''
@@ -112,7 +114,19 @@ class Device:
 class Packet:
     PREFIX = b'\xAA'
 
-    def __init__(self, src, dst, cmd_set, cmd_id, payload = b'', dsrc = 1, ddst = 1, version = 3, seq = 0, product_id = 0):
+    NET_BLE_COMMAND_CMD_CHECK_RET_TIME = 0x53
+    NET_BLE_COMMAND_CMD_SET_RET_TIME = 0x52
+
+    NET_BLE_COMMAND_VERSION = 0x03;
+    NET_BLE_COMMAND_IF_TYPE_WIFI_AP = 0x00
+    NET_BLE_COMMAND_IF_TYPE_WIFI_STATION = 0x01
+    NET_BLE_COMMAND_IF_TYPE_ETH_WAN = 0x10
+    NET_BLE_COMMAND_IF_TYPE_ETH_LAN = 0x12
+    NET_BLE_COMMAND_IF_TYPE_TELECOMM_4G = 0x20
+    NET_BLE_COMMAND_IF_TYPE_MAC_INFO = 0xf0
+    NET_BLE_COMMAND_IF_TYPE_UNKNOW = 0xff
+
+    def __init__(self, src, dst, cmd_set, cmd_id, payload = b'', dsrc = 1, ddst = 1, version = 3, seq = None, product_id = 0):
         self._src        = src
         self._dst        = dst
         self._cmd_set    = cmd_set
@@ -121,30 +135,65 @@ class Packet:
         self._dsrc       = dsrc
         self._ddst       = ddst
         self._version    = version
-        self._seq        = seq
+        self._seq        = seq if seq != None else b'\x00\x00\x00\x00'
         self._product_id = product_id
 
-    def payload(self):
-        return self._payload
+        # For representation
+        self._payload_hex = bytearray(self._payload).hex()
 
-    def cmdSet(self):
-        return self._cmd_set
-
-    def cmdId(self):
-        return self._cmd_id
-
+    @property
     def src(self):
         return self._src
 
+    @property
+    def dst(self):
+        return self._dst
+
+    @property
+    def cmdSet(self):
+        return self._cmd_set
+
+    @property
+    def cmdId(self):
+        return self._cmd_id
+
+    @property
+    def payload(self):
+        return self._payload
+
+    @property
+    def payloadHex(self):
+        return self._payload_hex
+
+    @property
+    def dsrc(self):
+        return self._dsrc
+
+    @property
+    def ddst(self):
+        return self._ddst
+
+    @property
+    def version(self):
+        return self._version
+
+    @property
+    def seq(self):
+        return self._seq
+
+    @property
+    def productId(self):
+        return self._product_id
+
     @staticmethod
-    def fromBytes(data):
+    def fromBytes(data, is_xor = False):
         '''Deserializes bytes stream into internal data'''
         if len(data) < 20:
-            print("ERROR: Unable to parse packet - too small: " + " ".join("{:02x}".format(c) for c in data))
+            print("ERROR: Unable to parse packet - too small: " + bytearray(data).hex())
             return None
 
         if not data.startswith(Packet.PREFIX):
-            print("ERROR: Unable to parse packet - prefix is incorrect: " + " ".join("{:02x}".format(c) for c in data))
+            print("ERROR: Unable to parse packet - prefix is incorrect: " + bytearray(data).hex())
             return None
 
         version = data[1]
@@ -153,18 +202,18 @@ class Packet:
         if version == 3:
             # Check whole packet CRC16
             if crc16.arc(data[:-2]) != struct.unpack('<H', data[-2:])[0]:
-                print("ERROR: Unable to parse packet - incorrect CRC16: " + " ".join("{:02x}".format(c) for c in data))
+                print("ERROR: Unable to parse packet - incorrect CRC16: " + bytearray(data).hex())
                 return None
 
         # Check header CRC8
         if crc8.smbus(data[:4]) != data[4]:
-            print("ERROR: Unable to parse packet - incorrect header CRC8: " + " ".join("{:02x}".format(c) for c in data))
+            print("ERROR: Unable to parse packet - incorrect header CRC8: " + bytearray(data).hex())
             return None
 
         #data[4] # crc8 of header
         #product_id = data[5] # We can't determine the product id from the bytestream
 
-        seq = struct.unpack('<L', data[6:10])[0]
+        seq = data[6:10]
         # data[10:12] # static zeroes
         src = data[12]
         dst = data[13]
@@ -177,8 +226,12 @@ class Packet:
         if payload_length > 0:
             payload = data[18:18+payload_length]
 
-        if version == 19 and payload[-2:] == b'\xbb\xbb':
-            payload = payload[:-2]
+            # If first byte of seq is set - we need to xor payload with it to get the real data
+            if is_xor == True and seq[0] != b'\x00':
+                payload = bytes([c ^ seq[0] for c in payload])
+
+            if version == 19 and payload[-2:] == b'\xbb\xbb':
+                payload = payload[:-2]
 
         return Packet(src, dst, cmd_set, cmd_id, payload, dsrc, ddst, version, seq)
 
@@ -190,7 +243,7 @@ class Packet:
         # Header crc
         data += struct.pack('<B', crc8.smbus(data))
         # Additional data
-        data += self.productByte() + struct.pack('<L', self._seq)
+        data += self.productByte() + self._seq
         data += b'\x00\x00' # Unknown static zeroes, no strings attached right now
         data += struct.pack('<B', self._src) + struct.pack('<B', self._dst)
         data += struct.pack('<B', self._dsrc) + struct.pack('<B', self._ddst)
@@ -209,6 +262,9 @@ class Packet:
         else:
             return b'\x0c'
 
+    def __repr__(self):
+        return "Packet(0x{_src:02X}, 0x{_dst:02X}, 0x{_cmd_set:02X}, 0x{_cmd_id:02X}, bytes.fromhex('{_payload_hex}'), 0x{_dsrc:02X}, 0x{_ddst:02X}, 0x{_version:02X}, {_seq}, 0x{_product_id:02X})".format(**vars(self))
+
 class EncPacket:
     PREFIX = b'\x5A\x5A'
 
@@ -219,13 +275,12 @@ class EncPacket:
     PAYLOAD_TYPE_VX_PROTOCOL = 0x00
     PAYLOAD_TYPE_ODM_PROTOCOL = 0x04
 
-    def __init__(self, frame_type, payload_type, payload, cmd_id = 0, version = 0, seq = 0, enc_key = None, iv = None):
+    def __init__(self, frame_type, payload_type, payload, cmd_id = 0, version = 0, enc_key = None, iv = None):
         self._frame_type   = frame_type
         self._payload_type = payload_type
         self._payload      = payload
         self._cmd_id       = cmd_id
         self._version      = version
-        self._seq          = seq
         self._enc_key      = enc_key
         self._iv           = iv
 
@@ -320,7 +375,7 @@ class Connection:
 
     async def parseSimple(self, data: str):
         '''Deserializes bytes stream into the simple bytes'''
-        print("%s: ParseSimple: %r" % (self._address, " ".join("{:02x}".format(c) for c in data)))
+        print("%s: ParseSimple: %r" % (self._address, bytearray(data).hex()))
 
         header = data[0:6]
         data_end = 6 + struct.unpack('<H', header[4:6])[0]
@@ -329,7 +384,7 @@ class Connection:
 
         # Check the payload CRC16
         if crc16.arc(header+payload_data) != struct.unpack('<H', payload_crc)[0]:
-            print("%s: ERROR: Unable to parse simple packet - incorrect CRC16: %r", (self._address, " ".join("{:02x}".format(c) for c in data[:6+payload_length])))
+            print("%s: ERROR: Unable to parse simple packet - incorrect CRC16: %r", (self._address, bytearray(data[:6+payload_length]).hex()))
             return None
 
         return payload_data
@@ -341,16 +396,16 @@ class Connection:
             data = self._enc_packet_buffer + data
             self._enc_packet_buffer = b''
 
-        print("%s: ParseEncPackets: %r" % (self._address, " ".join("{:02x}".format(c) for c in data)))
+        print("%s: ParseEncPackets: %r" % (self._address, bytearray(data).hex()))
         if len(data) < 8:
-            print("%s: ERROR: Unable to parse encrypted packet - too small: %r" % (self._address, " ".join("{:02x}".format(c) for c in data)))
+            print("%s: ERROR: Unable to parse encrypted packet - too small: %r" % (self._address, bytearray(data).hex()))
             return None
 
         # Data can contain multiple EncPackets and even incomplete ones, so walking through
         packets = list()
         while data:
             if not data.startswith(EncPacket.PREFIX):
-                print("%s: ERROR: Unable to parse encrypted packet - prefix is incorrect: %r" %(self._address, " ".join("{:02x}".format(c) for c in data)))
+                print("%s: ERROR: Unable to parse encrypted packet - prefix is incorrect: %r" %(self._address, bytearray(data).hex()))
                 return packets
 
             header = data[0:6]
@@ -367,15 +422,15 @@ class Connection:
 
             # Check the packet CRC16
             if crc16.arc(header+payload_data) != struct.unpack('<H', payload_crc)[0]:
-                print("%s: ERROR: Unable to parse encrypted packet - incorrect CRC16: %r" % (self._address, " ".join("{:02x}".format(c) for c in data[:6+payload_length])))
+                print("%s: ERROR: Unable to parse encrypted packet - incorrect CRC16: %r" % (self._address, bytearray(data[:6+payload_length]).hex()))
                 continue
-            
+
             # Decrypt the payload packet
             payload = await self.decryptSession(payload_data)
-            print("%s: ParseEncPackets: decrypted payload: %r" % (self._address, " ".join("{:02x}".format(c) for c in payload)))
+            print("%s: ParseEncPackets: decrypted payload: %r" % (self._address, bytearray(payload).hex()))
 
-            # Parse packet
-            packet = Packet.fromBytes(payload)
+            # Parse packet - Y needs xor
+            packet = Packet.fromBytes(payload, self._dev_sn.startswith('Y711'))
             if packet != None:
                 packets.append(packet)
 
@@ -451,10 +506,37 @@ class Connection:
         else:
             self._disconnected.set()
 
-    async def sendRequest(self, send_data: bytes, response_handler):
-        print("%s: Sending: %r" % (self._address, " ".join("{:02x}".format(c) for c in send_data)))
-        await self._client.start_notify(Connection.NOTIFY_CHARACTERISTIC, response_handler)
+    async def sendRequest(self, send_data: bytes, response_handler = None):
+        print("%s: Sending: %r" % (self._address, bytearray(send_data).hex()))
+        if response_handler:
+            await self._client.start_notify(Connection.NOTIFY_CHARACTERISTIC, response_handler)
         await self._client.write_gatt_char(Connection.WRITE_CHARACTERISTIC, bytearray(send_data))
+
+    async def sendPacket(self, packet: Packet, response_handler = None):
+        print("%s: Sending packet: %r" % (self._address, packet))
+        # Wrapping and encrypting with session key
+        to_send = EncPacket(
+            EncPacket.FRAME_TYPE_PROTOCOL, EncPacket.PAYLOAD_TYPE_VX_PROTOCOL,
+            packet.toBytes(), 0, 0, self._session_key, self._iv,
+        ).toBytes()
+
+        await self.sendRequest(to_send, response_handler)
+
+    async def replyPacket(self, packet: Packet):
+        '''Copies and changes the packet to be reply packet and sends it back to device'''
+        reply_packet = Packet(
+            packet.dst,  # Switching src to dst
+            packet.src,  # Switching dst to src
+            packet.cmdSet,
+            packet.cmdId,
+            packet.payload,
+            0x01,
+            0x01,  # Replacing 0 with 1
+            packet.version,
+            packet.seq,
+            packet.productId,
+        )
+        await self.sendPacket(reply_packet)
 
     async def initBleSessionKey(self):
         print("%s: initBleSessionKey: Pub key exchange" % (self._address,))
@@ -518,24 +600,18 @@ class Connection:
         print("%s: INFO: getKeyInfoReq: Receiving auth status" % (self._address,))
 
         # Preparing packet with empty payload
-        packet = Packet(0x21, 0x35, 0x35, 0x89, b'', 0x01, 0x01, 0x03, 0x00, 0x00)
+        packet = Packet(0x21, 0x35, 0x35, 0x89, b'', 0x01, 0x01, 0x03)
 
-        # Wrapping and encrypting with session key
-        to_send = EncPacket(
-            EncPacket.FRAME_TYPE_PROTOCOL, EncPacket.PAYLOAD_TYPE_VX_PROTOCOL,
-            packet.toBytes(), 0, 0, 0, self._session_key, self._iv,
-        ).toBytes()
-
-        await self.sendRequest(to_send, self.getAuthStatusHandler)
+        await self.sendPacket(packet, self.getAuthStatusHandler)
 
     async def getAuthStatusHandler(self, characteristic: BleakGATTCharacteristic, recv_data: bytearray):
         await self._client.stop_notify(Connection.NOTIFY_CHARACTERISTIC)
         packets = await self.parseEncPackets(bytes(recv_data))
         if len(packets) < 1:
             print("%s: ERROR: Unable to receive packet" % (self._address,))
-        data = packets[0].payload()
+        data = packets[0].payload
 
-        print("%s: DEBUG: getAuthStatusHandler data: %r" % (self._address, " ".join("{:02x}".format(c) for c in data)))
+        print("%s: DEBUG: getAuthStatusHandler data: %r" % (self._address, bytearray(data).hex()))
         await self.autoAuthentication()
 
     async def autoAuthentication(self):
@@ -543,65 +619,197 @@ class Connection:
 
         # Building payload for auth
         md5_data = hashlib.md5((USER_ID + self._dev_sn).encode('ASCII')).digest()
-        payload = ("".join("{:02X}".format(c) for c in md5_data)).encode('ASCII')
+        payload = (bytearray(md5_data).hex()).encode('ASCII')
 
         # Forming packet
-        packet = Packet(0x21, 0x35, 0x35, 0x86, payload, 0x01, 0x01, 0x03, 0x00, 0x00)
+        packet = Packet(0x21, 0x35, 0x35, 0x86, payload, 0x01, 0x01, 0x03)
 
-        # Wrapping and encrypting with session key
-        to_send = EncPacket(
-            EncPacket.FRAME_TYPE_PROTOCOL, EncPacket.PAYLOAD_TYPE_VX_PROTOCOL,
-            packet.toBytes(), 0, 0, 0, self._session_key, self._iv,
-        ).toBytes()
-
-        await self.sendRequest(to_send, self.autoAuthenticationHandler)
-
-    async def autoAuthenticationHandler(self, characteristic: BleakGATTCharacteristic, recv_data: bytearray):
-        await self._client.stop_notify(Connection.NOTIFY_CHARACTERISTIC)
-        packets = await self.parseEncPackets(bytes(recv_data))
-        
-        if len(packets) < 1:
-            print("%s: ERROR: Unable to receive packet" % (self._address,))
-        
-        data = packets[0].payload()
-        print("%s: DEBUG: autoAuthenticationHandler data: %r" % (self._address, " ".join("{:02x}".format(c) for c in data)))
-        
-        if data != b'\x00':
-            raise Exception("%s: ERROR: Auth failed with response: %r" % (self._address, " ".join("{:02x}".format(c) for c in data)))
-
-        await self.listenForData()
-
-    async def listenForData(self):
-        print("%s: INFO: listenForData: Listening for data from device" % (self._address,))
-
-        await self._client.start_notify(Connection.NOTIFY_CHARACTERISTIC, self.listenForDataHandler)
+        # Sending request and starting the common listener
+        await self.sendPacket(packet, self.listenForDataHandler)
 
     async def listenForDataHandler(self, characteristic: BleakGATTCharacteristic, recv_data: bytearray):
         packets = await self.parseEncPackets(bytes(recv_data))
 
         for packet in packets:
             processed = False
+            send_reply = False
 
-            if packet.src() == 0x0B and packet.cmdSet() == 0x0C:
-                if packet.cmdId() == 0x01:
+            if packet.src == 0x35 and packet.cmdSet == 0x35 and packet.cmdId == 0x86: # Handling autoAuthentication response
+                if packet.payload != b'\x00':
+                    # TODO: Most probably we need to follow some other way for auth, but happens rarely
+                    raise Exception("%s: ERROR: Auth failed with response: %r" % (self._address, bytearray(data).hex()))
+                print("%s: Auth success" % (self._address,))
+            if packet.src == 0x0B and packet.cmdSet == 0x0C:
+                if packet.cmdId == 0x01:
                     p = pd303_pb2.ProtoTime()
-                    p.ParseFromString(packet.payload())
+                    p.ParseFromString(packet.payload)
                     processed = True
-                    print("Test1:", str(p))
-                elif packet.cmdId() == 0x20:
+                    send_reply = True
+                    print("PD303 ProtoTime:", str(p))
+                elif packet.cmdId == 0x20:
                     p = pd303_pb2.ProtoPushAndSet()
-                    p.ParseFromString(packet.payload())
+                    p.ParseFromString(packet.payload)
                     processed = True
-                    print("Test2:", str(p))
-                    if not p.HasField('backup_incre_info'):
-                        continue
-                    p = p.backup_incre_info
-                    if p.HasField('errcode'):
-                        for e in p.errcode.err_code:
-                            print(e)
+                    send_reply = True
+                    print("PD303 ProtoPushAndSet:", str(p))
+                elif packet.cmdId == 0x21:
+                    p = pd303_pb2.ProtoPushAndSet()
+                    p.ParseFromString(packet.payload)
+                    processed = True
+                    print("PD303 isGetCfgFlag back:", str(p))
+            elif packet.src == 0x35 and packet.cmdSet == 0x01 and packet.cmdId == Packet.NET_BLE_COMMAND_CMD_SET_RET_TIME:
+                print("%s: PD303: Device connected & ready: %r" % (self._address, packet))
+                # Device requested for time and timezone offset, so responding with that
+                # otherwise it will not be able to send us predictions and config data
+                if len(packet.payload) == 0:
+                    print("%s: PD303: Responding with RTC data to device" % (self._address,))
+                    await self.sendUtcTime()
+                    await self.sendRTCRespond()
+                    await self.sendRTCCheck()
+                processed = True
+            elif packet.src == 0x0B and packet.cmdSet == 0x01 and packet.cmdId == 0x55:
+                # Device is ready so send it the config request
+                print("%s: PD303: Requesting config from device" % (self._address,))
+                await self.enableConfigData()
+                processed = True
+            
+            # YJ751 logic
+            elif packet.src == 0x02 and packet.cmdSet == 0x02:
+                if packet.cmdId == 0x01:  # Ping
+                    p = yj751_sys_pb2.AppShowHeartbeatReport()
+                    p.ParseFromString(packet.payload)
+                    processed = True
+                    send_reply = True
+                    print("YJ751 AppShowHeartbeatReport:", str(p))
+                elif packet.cmdId == 0x02:  # Port Current, Voltage, Frequency
+                    p = yj751_sys_pb2.BackendRecordHeartbeatReport()
+                    p.ParseFromString(packet.payload)
+                    processed = True
+                    send_reply = True
+                    print("YJ751 BackendRecordHeartbeatReport:", str(p))
+                elif packet.cmdId == 0x03:  # Configs
+                    p = yj751_sys_pb2.APPParaHeartbeatReport()
+                    p.ParseFromString(packet.payload)
+                    processed = True
+                    send_reply = True
+                    print("YJ751 APPParaHeartbeatReport:", str(p))
+                elif packet.cmdId == 0x04:  # Battery package info
+                    p = yj751_sys_pb2.BpInfoReport()
+                    p.ParseFromString(packet.payload)
+                    processed = True
+                    send_reply = True
+                    print("YJ751 BpInfoReport:", str(p))
+            elif packet.src == 0x06 and packet.cmdSet == 0xFE and packet.cmdId == 0x10:
+                # TODO: Not quite sure it's the right message type - but most probably
+                p = yj751_sys_pb2.ProductInfoGetAck()
+                p.ParseFromString(packet.payload)
+                processed = True
+                send_reply = True
+                pass
+
+            if send_reply:
+                # We need to resend packets back to device to enable device to send the additional info
+                await self.replyPacket(packet)
+
             if not processed:
-                print("%s: DEBUG: listenForDataHandler packet data: %r" % (self._address, " ".join("{:02x}".format(c) for c in packet.payload())))
-                print("%s: DEBUG: listenForDataHandler packet src: %02X, cmdSet: %02X, cmdId: %02X" % (self._address, packet.src(), packet.cmdSet(), packet.cmdId()) )
+                print("%s: WARN: listenForDataHandler not processed packet: %r" % (self._address, packet))
+
+    async def enableConfigData(self, enable = True):
+        print("%s: INFO: enableConfigData" % (self._address,))
+        # Forming packet
+        ppas = pd303_pb2.ProtoPushAndSet()
+        ppas.is_get_cfg_flag = enable
+        payload = ppas.SerializeToString()
+        packet = Packet(0x21, 0x0B, 0x0C, 0x21, payload, 0x01, 0x01, 0x13)
+
+        await self.sendPacket(packet)
+
+    async def switchCircuitOff(self, circuit_id):
+        print("%s: INFO: switchCircuitOff: %d" % (self._address, circuit_id))
+        #load_incre_info {
+        #  hall1_incre_info {
+        #    ch1_sta {
+        #      load_sta: LOAD_CH_POWER_OFF
+        #      ctrl_mode: RLY_HAND_CTRL_MODE
+        #    }
+        #  }
+        #}
+        #EcoPacket(src=21, dst=0B, cmdSet=0C, cmdId=21, dSrc=01, dDst=01, payload=8a05090a07d2050408001001)
+        #aa130c00800d000000000000210b01010c21
+        # 8a05090a07d2050408001001
+        # fdd6
+        #5a5a100132004a1cae9dd528ba4253a7f4e15ced6db070205a634b07b92fdb5d412d2f7124e8ba84b03a8e9f4e06f3ac7fb1ddc4de6d71a8
+
+        # Forming packet
+        ppas = pd303_pb2.ProtoPushAndSet()
+        sta = getattr(ppas.load_incre_info.hall1_incre_info, 'ch'+str(circuit_id+1)+'_sta')
+        sta.load_sta = pd303_pb2.LOAD_CH_STA.LOAD_CH_POWER_OFF
+        sta.ctrl_mode = pd303_pb2.CTRL_MODE.RLY_HAND_CTRL_MODE
+        payload = ppas.SerializeToString()
+        packet = Packet(0x21, 0x0B, 0x0C, 0x21, payload, 0x01, 0x01, 0x13)
+
+        await self.sendPacket(packet)
+
+    async def switchCircuitOn(self, circuit_id):
+        print("%s: INFO: switchCircuitOn: %d" % (self._address, circuit_id))
+        #load_incre_info {
+        #  hall1_incre_info {
+        #    ch1_sta {
+        #      load_sta: LOAD_CH_POWER_ON
+        #      ctrl_mode: RLY_HAND_CTRL_MODE
+        #    }
+        #  }
+        #}
+
+        # Forming packet
+        ppas = pd303_pb2.ProtoPushAndSet()
+        sta = getattr(ppas.load_incre_info.hall1_incre_info, 'ch'+str(circuit_id+1)+'_sta')
+        sta.load_sta = pd303_pb2.LOAD_CH_STA.LOAD_CH_POWER_ON
+        sta.ctrl_mode = pd303_pb2.CTRL_MODE.RLY_HAND_CTRL_MODE
+        payload = ppas.SerializeToString()
+        packet = Packet(0x21, 0x0B, 0x0C, 0x21, payload, 0x01, 0x01, 0x13)
+
+        await self.sendPacket(packet)
+
+    async def sendUtcTime(self):
+        print("%s: INFO: sendUtcTime" % (self._address,))
+        # Forming packet
+        utcs = utc_sys_pb2.SysUTCSync()
+        utcs.sys_utc_time = int(time.time())
+        payload = utcs.SerializeToString()
+        packet = Packet(0x21, 0x0B, 0x01, 0x55, payload, 0x01, 0x01, 0x13)
+
+        await self.sendPacket(packet)
+
+    async def sendRTCRespond(self):
+        print("%s: INFO: sendRTCRespond" % (self._address,))
+
+        # Building payload
+        tz_offset = (time.timezone if (time.localtime().tm_isdst == 0) else time.altzone) / 60 / 60 * -1
+        tz_maj = int(tz_offset)
+        tz_min = int((tz_offset - tz_maj) * 100)
+        time_sec = int(time.time())
+        payload = struct.pack('<L', time_sec) + struct.pack('<b', tz_maj) + struct.pack('<b', tz_min)
+
+        # Forming packet
+        packet = Packet(0x21, 0x35, 0x01, Packet.NET_BLE_COMMAND_CMD_SET_RET_TIME, payload, 0x01, 0x01, 0x03)
+
+        await self.sendPacket(packet)
+
+    async def sendRTCCheck(self):
+        print("%s: INFO: sendRTCCheck" % (self._address,))
+
+        # Building payload
+        tz_offset = (time.timezone if (time.localtime().tm_isdst == 0) else time.altzone) / 60 / 60 * -1
+        tz_maj = int(tz_offset)
+        tz_min = int((tz_offset - tz_maj) * 100)
+        time_sec = int(time.time())
+        payload = struct.pack('<L', time_sec) + struct.pack('<b', tz_maj) + struct.pack('<b', tz_min)
+
+        # Forming packet
+        packet = Packet(0x21, 0x35, 0x01, Packet.NET_BLE_COMMAND_CMD_CHECK_RET_TIME, payload, 0x01, 0x01, 0x03)
+
+        await self.sendPacket(packet)
 
 
 async def main(address):

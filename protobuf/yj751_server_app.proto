@@ -1,0 +1,19 @@
+syntax = "proto2";
+
+package yj751;
+
+message SumBoxingData {
+  optional uint32 total_remain_cap = 1;
+  optional uint32 total_remain_time = 2;
+  optional uint32 total_power_ac_in = 3;
+  optional uint32 total_power_pv_hign_in = 4;
+  optional uint32 total_power_pv_low_in = 5;
+  optional uint32 total_power_pr_out = 6;
+  optional uint32 device_num = 7;
+  optional uint32 ac_in_num = 8;
+  optional uint32 pv_in_num = 9;
+  optional uint32 left_power_sn = 10;
+  optional uint32 right_power_sn = 11;
+  optional uint32 left_cap_sn = 12;
+  optional uint32 right_cap_sn = 13;
+}

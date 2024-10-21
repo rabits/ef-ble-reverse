@@ -1,0 +1,135 @@
+syntax = "proto2";
+
+package jt_s1;
+
+message BpAnalysisPower {
+  optional int32 value_upper_limit = 1;
+  optional int32 value_lower_limit = 2;
+  optional uint32 value_span_count = 3;
+  optional float count_scale = 4;
+}
+
+message ServerAcktoBp {
+  optional uint32 cmd_ack = 1;
+}
+
+message AnalysisValue {
+  optional int32 value_upper_limit = 1;
+  optional int32 value_lower_limit = 2;
+  optional uint32 value_span_count = 3;
+}
+
+message BpAnalysisVolt {
+  optional uint32 index = 1;
+  optional int32 value_upper_limit = 2;
+  optional int32 value_lower_limit = 3;
+  optional uint32 series_num1 = 4;
+  repeated uint32 value_span_count = 5;
+  optional uint32 series_num2 = 6;
+  repeated float count_scale = 7;
+  optional uint32 pack_num = 8;
+  optional string pack_sn = 9;
+  optional uint32 data_analysis_ver = 10;
+  optional uint32 chg_dsg_state = 11;
+}
+
+message BpAnalysisTemp {
+  optional uint32 index = 1;
+  optional uint32 chg_dsg_state = 2;
+  optional int32 value_upper_limit = 3;
+  optional int32 value_lower_limit = 4;
+  optional uint32 ntc_num1 = 5;
+  repeated uint32 value_span_count = 6;
+  optional uint32 ntc_num2 = 7;
+  repeated float count_scale = 8;
+  optional uint32 pack_num = 9;
+  optional string pack_sn = 10;
+  optional uint32 data_analysis_ver = 11;
+}
+
+message BpAnalysisCurr {
+  optional uint32 index = 1;
+  repeated .BpAnalysisPower analysis_amp_data = 2;
+  optional uint32 pack_num = 3;
+  optional string pack_sn = 4;
+  optional uint32 data_analysis_ver = 5;
+  repeated int32 scale_coefficient = 6;
+}
+
+message BpAnalysisWatt {
+  optional uint32 index = 1;
+  repeated .BpAnalysisPower analysis_watts_data = 2;
+  optional uint32 pack_num = 3;
+  optional string pack_sn = 4;
+  optional uint32 data_analysis_ver = 5;
+}
+
+message BpAnalysisOther {
+  optional uint32 cell_run_time_count = 1;
+  repeated uint32 event_count = 2;
+  optional uint32 series_num = 3;
+  optional uint32 parallel_num = 4;
+  optional uint32 pack_num = 5;
+  optional string pack_sn = 6;
+  optional uint32 data_analysis_ver = 7;
+  optional uint32 power_off_time = 8;
+}
+
+message BpAnalysisExSc {
+  optional uint32 series_num = 1;
+  repeated float vol_k = 2;
+  optional int32 k_temp = 3;
+  optional uint32 pack_num = 4;
+  optional string pack_sn = 5;
+  optional uint32 data_analysis_ver = 6;
+  optional int32 kT1_temp = 7;
+  optional uint32 T1_num = 8;
+  repeated uint32 esc_volt_t1 = 9;
+  optional uint32 T2_num = 10;
+  repeated uint32 esc_volt_t2 = 11;
+  optional uint32 esc_interval_t1_t2 = 12;
+}
+
+message BpAnalysisInSc {
+  optional int32 ec_isc_r_value_temp = 1;
+  optional uint32 series_num1 = 2;
+  repeated float ec_isc_r_value = 3;
+  optional uint32 series_num2 = 4;
+  repeated uint32 ec_isc_t_value = 5;
+  optional int32 ec_isc_t_temp = 6;
+  optional float full_cap = 7;
+  optional float ec_cv_cap = 8;
+  optional uint32 ec_cv_time = 9;
+  optional uint32 pack_num = 10;
+  optional string pack_sn = 11;
+  optional uint32 data_analysis_ver = 12;
+}
+
+message AnalysisChgHeater {
+  message CellTempData {
+    repeated .AnalysisValue cell_temp = 1;
+  }
+  
+  optional uint32 heater_use_cnt = 1;
+  optional uint32 heat_total_time = 2;
+  repeated .AnalysisValue bgn_min_temp = 3;
+  repeated .AnalysisValue heat_power = 4;
+  repeated uint32 stp_heat_event_cnt = 5;
+  repeated .AnalysisChgHeater.CellTempData celltemp_data = 6;
+  optional uint32 pack_num = 7;
+  optional string pack_sn = 8;
+  optional uint32 data_analysis_ver = 9;
+}
+
+message AnalysisDsgHeater {
+  optional uint32 heater_use_cnt = 1;
+  optional uint32 heat_total_time = 2;
+  repeated .AnalysisValue bgn_heat_soc = 3;
+  repeated .AnalysisValue heat_dsg_time = 4;
+  repeated .AnalysisValue heat_to_dsg_time = 5;
+  repeated uint32 stp_heat_event_cnt = 6;
+  repeated .AnalysisValue bgn_min_temp = 7;
+  optional uint32 pack_num = 8;
+  optional string pack_sn = 9;
+  optional uint32 data_analysis_ver = 10;
+}

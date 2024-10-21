@@ -1,0 +1,164 @@
+syntax = "proto2";
+
+package platform3;
+
+enum PlCmdSets {
+  PL_NONE_CMD_SETS = 0;
+  PL_BASIC_CMD_SETS = 1;
+  PL_EXT_CMD_SETS = 254;
+}
+
+enum CommCmdId {
+  COMM_CMD_ID_NONE = 0;
+  COMM_CMD_ID_SYS_RTCINFO_GET = 84;
+  COMM_CMD_ID_SYS_UTC_CALIBRATION = 85;
+  COMM_CMD_ID_SYS_ZONE_CALIBRATION = 86;
+  COMM_CMD_ID_SYS_TIMEZONE_ID_CALIBRATION = 87;
+  COMM_CMD_ID_SYS_UTC_REQUEST = 88;
+}
+
+enum PlCmdId {
+  PL_CMD_ID_NONE = 0;
+  PL_CMD_ID_XLOG = 16;
+  PL_CMD_ID_WATTH = 32;
+}
+
+message EnergyItem {
+  optional uint32 timestamp = 1;
+  optional uint32 watth_type = 2;
+  repeated uint32 watth = 3;
+}
+
+message EnergyTotalReport {
+  optional uint32 watth_seq = 1;
+  optional .EnergyItem watth_item = 2;
+}
+
+message BatchEnergyTotalReport {
+  optional uint32 watth_seq = 1;
+  repeated .EnergyItem watth_item = 2;
+}
+
+message EnergyTotalReportAck {
+  optional uint32 result = 1;
+  optional uint32 watth_seq = 2;
+  optional uint32 watth_type = 3;
+}
+
+message EventRecordItem {
+  optional uint32 timestamp = 1;
+  optional uint32 sys_ms = 2;
+  optional uint32 event_no = 3;
+  repeated float event_detail = 4;
+}
+
+message EventRecordReport {
+  optional uint32 event_ver = 1;
+  optional uint32 event_seq = 2;
+  repeated .EventRecordItem event_item = 3;
+  optional string sn = 4;
+}
+
+message EventInfoReportAck {
+  optional uint32 result = 1;
+  optional uint32 event_seq = 2;
+  optional uint32 event_item_num = 3;
+}
+
+message ProductNameSet {
+  optional string name = 1;
+}
+
+message ProductNameSetAck {
+  optional uint32 result = 1;
+}
+
+message ProductNameGet {
+}
+
+message ProductNameGetAck {
+  optional string name = 3;
+}
+
+message RTCTimeGet {
+}
+
+message RTCTimeGetAck {
+  optional uint32 timestamp = 1;
+  optional int32 timezone = 2;
+}
+
+message RTCTimeSet {
+  optional uint32 timestamp = 1;
+  optional int32 timezone = 2;
+}
+
+message RTCTimeSetAck {
+  optional uint32 result = 1;
+}
+
+message StatisticsItem {
+  optional uint32 timestamp = 1;
+  optional uint32 time_type = 2;
+  optional uint32 data_type = 3;
+  repeated sint32 data = 4;
+}
+
+message StatisticsTotalReport {
+  optional uint32 item_seq = 1;
+  repeated .StatisticsItem item_data = 2;
+}
+
+message StatisticsTotalReportAck {
+  optional uint32 result = 1;
+  optional uint32 item_seq = 2;
+  optional uint32 time_type = 3;
+  optional uint32 data_type = 4;
+}
+
+message StatisticsRptCtrlSet {
+  optional uint32 time_type = 1;
+  optional uint32 data_type = 2;
+  optional uint32 sys_rate_ctrl_time = 3;
+}
+
+message StatisticsRptCtrlSetAck {
+  optional uint32 result = 1;
+  optional uint32 time_type = 2;
+  optional uint32 data_type = 3;
+}
+
+message SysUTCRequest {
+}
+
+message SysUTCRequestACK {
+  optional uint32 sys_utc_time = 1;
+}
+
+message SysRTCInfoGet {
+}
+
+message SysRTCInfoGetACK {
+  optional uint32 sys_utc_time = 1;
+  optional sint32 sys_timezone = 2;
+  optional uint32 time_type = 3;
+  optional string timezone_id = 4;
+  optional uint32 set_timezone_type = 5;
+}
+
+message SysUTCSync {
+  optional uint32 sys_utc_time = 1;
+}
+
+message SetCmdResultAck {
+  optional sint32 result = 1;
+}
+
+message SysTimezoneSync {
+  optional sint32 sys_timezone = 1;
+  optional uint32 set_timezone_type = 2;
+}
+
+message SysTimezoneIDSync {
+  optional string timezone_id = 1;
+}

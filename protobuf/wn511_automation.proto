@@ -1,0 +1,50 @@
+syntax = "proto2";
+
+package wn511;
+
+message rtc_data {
+  optional int32 week = 1;
+  optional int32 sec = 2;
+  optional int32 min = 3;
+  optional int32 hour = 4;
+  optional int32 day = 5;
+  optional int32 month = 6;
+  optional int32 year = 7;
+}
+
+message time_range_strategy {
+  optional uint32 is_config = 1;
+  optional uint32 is_enable = 2;
+  optional uint32 time_mode = 3;
+  optional uint32 time_data = 4;
+  optional .rtc_data start_time = 5;
+  optional .rtc_data stop_time = 6;
+}
+
+message time_task_config {
+  optional uint32 task_index = 1;
+  optional .time_range_strategy time_range = 2;
+  optional uint32 type = 3;
+}
+
+message time_task_delet {
+  optional uint32 task_index = 1;
+}
+
+message time_task_config_post {
+  optional .time_task_config task1 = 1;
+  optional .time_task_config task2 = 2;
+  optional .time_task_config task3 = 3;
+  optional .time_task_config task4 = 4;
+  optional .time_task_config task5 = 5;
+  optional .time_task_config task6 = 6;
+  optional .time_task_config task7 = 7;
+  optional .time_task_config task8 = 8;
+  optional .time_task_config task9 = 9;
+  optional .time_task_config task10 = 10;
+  optional .time_task_config task11 = 11;
+}
+
+message time_task_config_ack {
+  optional uint32 task_info = 1;
+}

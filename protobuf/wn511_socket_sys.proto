@@ -1,0 +1,125 @@
+syntax = "proto2";
+
+package wn511;
+
+message rtc_data {
+  optional int32 week = 1;
+  optional int32 sec = 2;
+  optional int32 min = 3;
+  optional int32 hour = 4;
+  optional int32 day = 5;
+  optional int32 month = 6;
+  optional int32 year = 7;
+}
+
+message time_range_strategy {
+  optional bool is_config = 1;
+  optional bool is_enable = 2;
+  optional int32 time_mode = 3;
+  optional int32 time_data = 4;
+  optional .rtc_data start_time = 5;
+  optional .rtc_data stop_time = 6;
+}
+
+message plug_ack_message {
+  optional uint32 ack = 1;
+}
+
+message plug_heartbeat_pack {
+  optional uint32 err_code = 1;
+  optional uint32 warn_code = 2;
+  optional uint32 country = 3;
+  optional uint32 town = 4;
+  optional int32 max_cur = 5;
+  optional int32 temp = 6;
+  optional int32 freq = 7;
+  optional int32 current = 8;
+  optional int32 volt = 9;
+  optional int32 watts = 10;
+  optional bool switch = 11;
+  optional int32 brightness = 12;
+  optional int32 max_watts = 13;
+  optional int32 heartbeat_frequency = 14;
+  optional int32 mesh_enable = 15;
+  optional uint32 reset_reason = 16;
+  optional uint32 rtc_reset_reason = 17;
+  optional uint32 reset_count = 18;
+  optional uint32 run_time = 19;
+  optional uint32 lan_state = 20;
+  optional uint32 stack_free = 21;
+  optional uint32 stack_min_free = 22;
+  optional uint32 mesh_id = 23;
+  optional uint32 mesh_layel = 24;
+  optional uint32 self_mac = 25;
+  optional uint32 parent_mac = 26;
+  optional int32 ota_dl_err = 27;
+  optional int32 ota_dl_tls_err = 28;
+  optional int32 sta_ip_addr = 29;
+  optional int32 matter_fabric = 30;
+  optional int32 gene_num = 31;
+  optional int32 cons_num = 32;
+  optional int32 gene_watt = 33;
+  optional int32 cons_watt = 34;
+  optional int32 wifi_err = 35;
+  optional int32 wifi_err_time = 36;
+  optional int32 mqtt_err = 37;
+  optional int32 mqtt_err_time = 38;
+  optional int32 self_ems_switch = 39;
+  optional int32 parent_wifi_rssi = 40;
+  optional int32 rssi_threshold = 41;
+  optional int32 rssi_variance = 42;
+}
+
+message plug_switch_message {
+  optional uint32 plug_switch = 1;
+}
+
+message brightness_pack {
+  optional int32 brightness = 1;
+}
+
+message max_cur_pack {
+  optional int32 max_cur = 1;
+}
+
+message time_task_config {
+  optional string task_name = 1;
+  optional .time_range_strategy time_range = 2;
+  optional int32 type = 3;
+}
+
+message time_task_config_post {
+  optional int32 index = 1;
+  optional .time_task_config task_config = 2;
+}
+
+message PowerItem {
+  optional uint32 timestamp = 1;
+  optional sint32 timezone = 2;
+  optional uint32 plug_power = 3;
+}
+
+message PowerPack {
+  optional uint32 sys_seq = 1;
+  repeated .PowerItem sys_power_stream = 2;
+}
+
+message PowerAckPack {
+  optional uint32 sys_seq = 1;
+}
+
+message max_watts_pack {
+  optional int32 max_watts = 1;
+}
+
+message mesh_ctrl_pack {
+  optional uint32 mesh_enable = 1;
+}
+
+message ret_pack {
+  optional bool ret_sta = 1;
+}
+
+message plug_ems_switch_message {
+  optional uint32 plug_ems_switch = 1;
+}
