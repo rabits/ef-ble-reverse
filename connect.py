@@ -619,7 +619,8 @@ class Connection:
 
         # Building payload for auth
         md5_data = hashlib.md5((USER_ID + self._dev_sn).encode('ASCII')).digest()
-        payload = (bytearray(md5_data).hex()).encode('ASCII')
+        # We need upper case in MD5 data here
+        payload = ("".join("{:02X}".format(c) for c in md5_data)).encode('ASCII')
 
         # Forming packet
         packet = Packet(0x21, 0x35, 0x35, 0x86, payload, 0x01, 0x01, 0x03)
@@ -637,7 +638,7 @@ class Connection:
             if packet.src == 0x35 and packet.cmdSet == 0x35 and packet.cmdId == 0x86: # Handling autoAuthentication response
                 if packet.payload != b'\x00':
                     # TODO: Most probably we need to follow some other way for auth, but happens rarely
-                    raise Exception("%s: ERROR: Auth failed with response: %r" % (self._address, bytearray(data).hex()))
+                    raise Exception("%s: ERROR: Auth failed with response: %r" % (self._address, bytearray(packet.payload).hex()))
                 print("%s: Auth success" % (self._address,))
             if packet.src == 0x0B and packet.cmdSet == 0x0C:
                 if packet.cmdId == 0x01:
